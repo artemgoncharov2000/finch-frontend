@@ -8,8 +8,8 @@ import Feed from './home/feed/Feed';
 import CreatePost from './home/CreatePost/CreatePost';
 import Favorites from './home/favorites/Favorites';
 import Profile from './home/profile/Profile';
-
-
+import FeedIcon from '../assets/nav/feed-icon.svg'
+import FavIcon from '../assets/nav/favorites-icon.svg'
 
 const Tab = createBottomTabNavigator()
 const HomeScreen: FC = () => {
@@ -31,7 +31,8 @@ const HomeScreen: FC = () => {
                 tabBarIcon: ({ focused, color, size }) => {
                 if (route.name === 'Feed') {
                     return (
-                        <Image source={require('../assets/nav/feed-icon.png')}/>
+                        focused ? <FeedIcon fill="#fff"/> : <FeedIcon/>
+                        
                     );
                 } else if (route.name === 'CreatePost') {
                     return (
@@ -39,7 +40,7 @@ const HomeScreen: FC = () => {
                     );
                 } else if (route.name === 'Favorites') {
                     return (
-                        <Image source={require('../assets/nav/feed-icon.png')}/>
+                        focused ? <FavIcon fill="#fff"/> : <FavIcon/>
                     );
                 } else if (route.name === 'Profile') {
                     return (

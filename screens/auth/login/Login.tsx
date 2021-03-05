@@ -1,28 +1,84 @@
-import React, { FC } from 'react'
-import {StyleSheet, Text, View, Image } from 'react-native';
+import React, { FC, useState } from 'react'
+import {StyleSheet, Text, View, Image,} from 'react-native';
 import DefaultButton from '../../../components/buttons/DefaultButton'
 import { TextInput } from 'react-native-gesture-handler';
 import { log } from 'react-native-reanimated';
 import InputField from '../../../components/input_fields/InputField';
 import Signup from '../signup/Signup'
+import axios from 'axios'
+import FinchIcon from '../../../assets/finch-logo.svg' 
 
-const Login: FC = (props) => {
+interface Props {
+    navigation: any
+}
 
-    console.log("Component created")
+interface User {
+    username: string,
+    password: string
+}
+
+const Login: FC<Props> = (props) => {
+
+    const [token, setToken] = useState<string>('')
+    const [user, setUser] = useState<User>({
+        username: '',
+        password: ''
+    })   
+
+    const onUsernameChange = (username: string) => {
+        setUser({
+            ...user,
+            username: username
+        })
+    }
+
+    const onPasswordChange = (password: string) => {
+        setUser({
+            ...user,
+            password: password
+        })
+    }
+
+    const loginUser = (user: User) => {
+        console.log(user)
+        fetch('http://localhost:8080/auth/login', {
+            method: 'Post',
+            headers: {
+                
+            },
+            body: JSON.stringify({
+                password: user.password,
+                username: user.username
+            })
+        })
+        .then((response) => {
+            setToken(response.headers["map"]["authorization"])
+            console.log(token)
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+    }
 
     return(
         <View style={styles.container}>
             <View style={styles.titleView}>
-                <Image source={require('../../../assets/finch-logo.png')}/>
+                <FinchIcon/>
                 <Text style={styles.title}>Вход</Text>
                 <Text style={styles.subTitle}>Добро пожаловать, {"\n"} приключения уже ждут вас!</Text>
             </View>
             <View style={styles.inputView}>
-                <InputField placeholder="Электронная почта" secureTextEntry={false} onChangeText={() => {}}/>
-                <InputField placeholder="Пароль" secureTextEntry={true} onChangeText={() => {}}/>
+                <InputField placeholder="Имя пользователя" secureTextEntry={false} onChangeText={text => onUsernameChange(text)}/>
+                <InputField placeholder="Пароль" secureTextEntry={true} onChangeText={text => onPasswordChange(text)}/>
             </View>
             <View style={styles.buttonView}>
-                <DefaultButton title="Войти" onPress={()=> props.navigation.navigate('HomeScreen')}/>
+                <DefaultButton 
+                    title="Войти" 
+                    onPress={()=> {
+                       // loginUser(user)
+                        props.navigation.navigate('HomeScreen')
+                    }}
+                />
                 <View>
                     
                 </View>
