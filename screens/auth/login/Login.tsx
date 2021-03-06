@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react'
-import {StyleSheet, Text, View, Image,} from 'react-native';
+import {StyleSheet, Text, View, Image} from 'react-native';
 import DefaultButton from '../../../components/buttons/DefaultButton'
 import { TextInput } from 'react-native-gesture-handler';
 import { log } from 'react-native-reanimated';
 import InputField from '../../../components/input_fields/InputField';
 import Signup from '../signup/Signup'
-import axios from 'axios'
+//@ts-ignore 
 import FinchIcon from '../../../assets/finch-logo.svg' 
 
 interface Props {
@@ -44,7 +44,6 @@ const Login: FC<Props> = (props) => {
         fetch('http://localhost:8080/auth/login', {
             method: 'Post',
             headers: {
-                
             },
             body: JSON.stringify({
                 password: user.password,

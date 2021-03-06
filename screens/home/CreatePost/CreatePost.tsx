@@ -1,9 +1,10 @@
 import React, {FC} from 'react'
-import {StyleSheet, Text, View, Image } from 'react-native';
+import {StyleSheet, Text, View, Image, Modal } from 'react-native';
 
-const CreatePost = () => {
+const CreatePost = (props) => {
+    props.navigation.navigate("ModalStackNavigator")
     return (
-        <View style={styles.container}>
+        <View style={styles.container} >
             <Text>Future create post</Text>
         </View>
     )

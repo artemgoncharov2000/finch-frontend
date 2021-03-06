@@ -1,42 +1,33 @@
 import React, {FC} from 'react';
 import {View, Text, StyleSheet, Dimensions, Image} from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import {createSwitchNavigator, createAppContainer, StackRouter} from 'react-navigation'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import Feed from './home/feed/Feed';
 import CreatePost from './home/CreatePost/CreatePost';
 import Favorites from './home/favorites/Favorites';
 import Profile from './home/profile/Profile';
+//@ts-ignore 
 import FeedIcon from '../assets/nav/feed-icon.svg'
+//@ts-ignore 
 import FavIcon from '../assets/nav/favorites-icon.svg'
+//@ts-ignore
+import ProfIcon from '../assets/nav/profile-icon.svg'
+//@ts-ignore
+import NewPostIcon from '../assets/nav/new-post-icon.svg'
+import ModalStackNavigator from './ModalStackNavigator';
 
 const Tab = createBottomTabNavigator()
 const HomeScreen: FC = () => {
     return (
-        // <View style={styles.container}>
-        //     <View style={styles.navigation}>
-        //         <Text>Navigation</Text>
-        //     </View>
-        //     <View style={styles.body}>
-        //         <Text>Body</Text>
-        //     </View>
-        //     <View style={styles.footer}>
-        //         <Text>Footer</Text>
-        //     </View>
-        // </View>
-        
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                 if (route.name === 'Feed') {
                     return (
                         focused ? <FeedIcon fill="#fff"/> : <FeedIcon/>
-                        
                     );
                 } else if (route.name === 'CreatePost') {
                     return (
-                        <Image source={require('../assets/nav/create-post-icon.png')}/>
+                        <NewPostIcon/>
                     );
                 } else if (route.name === 'Favorites') {
                     return (
@@ -44,7 +35,7 @@ const HomeScreen: FC = () => {
                     );
                 } else if (route.name === 'Profile') {
                     return (
-                        <Image source={require('../assets/nav/profile-icon.png')}/>
+                        <ProfIcon/>
                     );
                 }
                 },
@@ -67,11 +58,11 @@ export default HomeScreen
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'green'
+        
     },
     navigation: {
         flex: 2,
-        backgroundColor: 'red'
+        
     },
     body: {
         flex: 9,
@@ -81,6 +72,6 @@ const styles = StyleSheet.create({
     },
     footer: {
         flex: 1,
-        backgroundColor: 'cyan'
+        
     }
 })

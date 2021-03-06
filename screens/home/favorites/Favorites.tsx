@@ -1,10 +1,11 @@
 import React from 'react'
-import {StyleSheet, Text, View, Image } from 'react-native';
+import {StyleSheet, Text, View, Image, Button } from 'react-native';
 
-const Favorites= () => {
+const Favorites= (props) => {
     return (
         <View style={styles.container}>
             <Text>Future favorites</Text>
+            <Button title="modal" onPress={()=>{props.navigation.navigate("ModalStackNavigator")}}/>
         </View>
     )
 }
