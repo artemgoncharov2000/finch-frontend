@@ -4,7 +4,8 @@ import {StyleSheet, Text, View, Image, Button } from 'react-native';
 import ChangeProfileButton from '../../../components/buttons/ChangeProfileButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const Profile = () => {
+const Profile = (props) => {
+    
     const insets = useSafeAreaInsets();
     return (
         <View style={{
@@ -104,6 +105,10 @@ const Profile = () => {
                 
             </View>
             <View style={styles.body}>
+                <Button
+                    onPress={() => props.navigation.navigate('CreateStackScreen')}
+                    title="Create new guide"
+                />
                 {/* guides */}
             </View>
         </View>

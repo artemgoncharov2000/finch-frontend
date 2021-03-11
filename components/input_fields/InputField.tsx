@@ -22,12 +22,12 @@ const styles = StyleSheet.create({
     container: {
         width: 375,
         alignSelf: 'center',
-        borderBottomColor: "rgba(60, 60, 67, 0.3)",
-        borderBottomWidth: 0.5,
+        borderBottomColor: "black",
+        borderBottomWidth: 1.5,
         marginVertical: 10
     },
     input: {
         fontSize: 17,
-        paddingBottom: 19
+        paddingBottom: 5
     }
 });
