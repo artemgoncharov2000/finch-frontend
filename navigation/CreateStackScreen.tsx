@@ -13,15 +13,18 @@ const CreateStackScreen = () => {
           <CreateStack.Screen 
             name="NewGuide" 
             component={CreateGuide}
+            
             options={{
-              
+      
               headerRight: () => (
                 <Button
                   onPress={() => alert('You created a new guide!')}
                   title="Create"
-                  color="black"
+                  color="#007AFF"
                 />
               ),
+              headerBackTitle: "Back",
+              headerTitle: "New Guide"
             }}
           />
           <CreateStack.Screen 
@@ -33,10 +36,13 @@ const CreateStackScreen = () => {
                 <Button
                   onPress={() => alert('You added a new card!')}
                   title="Create"
-                  color="black"
+                  color="#007AFF"
                 />
               ),
+              headerBackTitle: "Back",
+              headerTitle: "New Card"
             }}
+            
           />     
         </CreateStack.Navigator>
       

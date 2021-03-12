@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const Favorites = (props) => {
+const Favorites = () => {
     const [image, setImage] = useState(null);
 
     useEffect(() => {
