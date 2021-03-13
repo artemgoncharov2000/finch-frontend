@@ -3,12 +3,14 @@ import {View, Text, StyleSheet, StyleProp, TextStyle} from 'react-native'
 import {TextInput, TouchableOpacity} from 'react-native-gesture-handler'
 
 interface Props {
-    placeholder: string;
+    placeholder?: string;
     secureTextEntry?: boolean;
     numberOfLines?: number;
     multiline?: boolean;
     fontSize?: number;
     fontWeight?: any;
+    maxLength?: number;
+    value?: string;
     onChangeText: (text: string) => void;
 }
 
@@ -33,7 +35,9 @@ const InputField: FC<Props> = (props) => {
                     fontWeight: props.fontWeight || "400",
                     paddingBottom: 5
                 }} 
-                placeholder={props.placeholder} 
+                value={props.value || undefined}
+                maxLength={props.maxLength || undefined}
+                placeholder={props.placeholder || undefined} 
                 numberOfLines={props.numberOfLines || 1}
                 secureTextEntry={props.secureTextEntry || false } 
                 multiline={props.multiline || false}

@@ -1,12 +1,60 @@
 import { setStatusBarBackgroundColor } from 'expo-status-bar';
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {StyleSheet, Text, View, Image, Button } from 'react-native';
 import ChangeProfileButton from '../../../components/buttons/ChangeProfileButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AsyncStorage } from 'react-native';
+import axios from 'axios';
+
+
 
 const Profile = (props) => {
-    
     const insets = useSafeAreaInsets();
+    const [token, setToken] = useState('')
+    const [profileData, setProfileData] = useState({
+        username: "", 
+        email: "", 
+        phone: "", 
+        title: "", 
+        description: "",
+        profilePhotoUrl: ""
+        
+    })
+    const getTokenFromStorage = async () => {
+        try {
+            setToken(await AsyncStorage.getItem('token'))
+            
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        getTokenFromStorage()
+        getProfileData()
+    })
+
+    const getProfileData = () => {
+        axios({
+            method: "get",
+            url: "http://192.168.1.70:8080/users/me",
+            headers: {
+                authorization: token
+            }
+        }).then(response => {
+            const data = response.data
+            console.log(data)
+            setProfileData({
+                username: data.username, 
+                email: data.email, 
+                phone: data.phone, 
+                title: data.title, 
+                description: data.description,
+                profilePhotoUrl: data.profilePhotoUrl
+            })
+        })
+    }
+
     return (
         <View style={{
                 flex: 1,
@@ -16,7 +64,7 @@ const Profile = (props) => {
             <View style={styles.header}>
                 <Text
                     style={{fontWeight: "600", fontSize: 17}}
-                >username</Text>
+                >{profileData.username}</Text>
             </View>
             <View style={styles.info}>
                 <View
@@ -36,7 +84,7 @@ const Profile = (props) => {
                         }}
                     >
                         <Image 
-                            source={require("../../../assets/profile/default.jpg")}
+                            source={{uri: profileData.profilePhotoUrl}}
                             style={{
                                 width: 48,
                                 height: 48
@@ -88,18 +136,18 @@ const Profile = (props) => {
                             padding: 10
                         }}
                     >
-                        Your title
+                        {profileData.title}
                     </Text>
                     <Text
                         style={{
                             padding: 10
                         }}
                     >
-                        Your status
+                        {profileData.description}
                     </Text>
                     <ChangeProfileButton
                         title="Редактировать профиль"
-                        onPress={()=>{}}
+                        onPress={()=>props.navigation.navigate('ProfileStackScreen')}
                     />
                 </View>
                 
@@ -108,6 +156,10 @@ const Profile = (props) => {
                 <Button
                     onPress={() => props.navigation.navigate('CreateStackScreen')}
                     title="Create new guide"
+                />
+                <Button
+                    onPress={() => {getProfileData()}}
+                    title="Test"
                 />
                 {/* guides */}
             </View>

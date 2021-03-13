@@ -4,6 +4,8 @@ import DefaultButton from '../../../components/buttons/DefaultButton'
 import InputField from '../../../components/input_fields/InputField';
 //@ts-ignore 
 import FinchIcon from '../../../assets/finch-logo.svg' 
+import axios from 'axios';
+import { MMKV } from 'react-native-mmkv';
 interface Props {
     navigation: any
 }
@@ -44,18 +46,29 @@ const Signup: FC<Props> = (props) => {
     }
 
     const registerUser = (user: User) => {
-        console.log(user)
-        fetch('http://localhost:8080/auth/register', {
-            method: 'POST',
-            headers: {
+        console.log('Hello world')
+        // fetch('https://finch-backend-ty3pscheea-lz.a.run.app/auth/register', {
+        //     method: 'POST',
+        //     headers: {
     
-            },
-            body: JSON.stringify({
+        //     },
+        //     body: JSON.stringify({
+        //         email: user.email,
+        //         password: user.password,
+        //         username: user.username
+        //     })
+        // });
+        axios({
+            method: 'POST',
+            url: 'http://192.168.1.70:8080/auth/register',
+            data: {
                 email: user.email,
                 password: user.password,
                 username: user.username
-            })
-        });
+            }
+        }).then(response => {console.log(response.data)})
+
+        
     }
 
     return(
@@ -73,9 +86,9 @@ const Signup: FC<Props> = (props) => {
             </View>
             <View style={styles.buttonView}>
                 <DefaultButton 
-                    title="Создать аккаунт" 
+                    title="Create account" 
                     onPress={()=>{
-                       // registerUser(user)
+                        registerUser(user)
                         props.navigation.navigate('Login')
                     }}
                 />

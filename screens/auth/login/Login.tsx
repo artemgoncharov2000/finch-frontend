@@ -1,17 +1,17 @@
 import React, { FC, useState } from 'react'
 import {StyleSheet, Text, View, Image} from 'react-native';
 import DefaultButton from '../../../components/buttons/DefaultButton'
-import { TextInput } from 'react-native-gesture-handler';
-import { log } from 'react-native-reanimated';
 import InputField from '../../../components/input_fields/InputField';
 import Signup from '../signup/Signup'
 //@ts-ignore 
 import FinchIcon from '../../../assets/finch-logo.svg' 
-
+import MMKVStorage from "react-native-mmkv-storage";
+import axios from 'axios';
+import { AsyncStorage } from 'react-native';
 interface Props {
     navigation: any
 }
-
+const MMKV = new MMKVStorage.Loader().initialize();
 interface User {
     username: string,
     password: string
@@ -19,7 +19,7 @@ interface User {
 
 const Login: FC<Props> = (props) => {
 
-    const [token, setToken] = useState<string>('')
+   // const [token, setToken] = useState<string>('')
     const [user, setUser] = useState<User>({
         username: '',
         password: ''
@@ -39,23 +39,31 @@ const Login: FC<Props> = (props) => {
         })
     }
 
+    const setTokenToStorage = async (token: string) => {
+        try {
+            //await MMKV.setStringAsync("jwt_token", token);
+            console.log(token)
+            await AsyncStorage.setItem('token', token)
+
+        } catch (err) {
+            console.log(err)
+        }
+        
+    }
+
     const loginUser = (user: User) => {
         console.log(user)
-        fetch('http://localhost:8080/auth/login', {
-            method: 'Post',
-            headers: {
-            },
-            body: JSON.stringify({
-                password: user.password,
-                username: user.username
-            })
-        })
-        .then((response) => {
-            setToken(response.headers["map"]["authorization"])
-            console.log(token)
-        })
-        .catch((error) => {
-            console.error(error)
+        axios({
+            method: 'POST',
+            url: 'http://192.168.1.70:8080/auth/login',
+            data: {
+                username: user.username,
+                password: user.password
+            }
+        }).then(response => {
+            let headers = response.headers
+            console.log(headers['authorization'])
+            setTokenToStorage(headers['authorization'])
         })
     }
 
@@ -72,10 +80,10 @@ const Login: FC<Props> = (props) => {
             </View>
             <View style={styles.buttonView}>
                 <DefaultButton 
-                    title="Войти" 
+                    title="Log in" 
                     onPress={()=> {
-                       // loginUser(user)
-                        props.navigation.navigate('HomeScreen')
+                        loginUser(user)
+                        props.navigation.navigate('MainStackScreen')
                     }}
                 />
                 <View>
