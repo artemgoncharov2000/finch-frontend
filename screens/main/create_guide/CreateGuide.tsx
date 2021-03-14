@@ -46,7 +46,7 @@ const CreateGuide = (props) => {
             ...guide,
             title: text
         })
-        
+        console.log('From ', guide)
         props.setGuide(guide)
     }
 
@@ -80,12 +80,15 @@ const CreateGuide = (props) => {
     const onImagePickerButtonPress = () => {
         pickImage()
         .then(uri => {
+            console.log(uri)
             setGuide({
                 ...guide,
                 thumbnailUrl: uri
             })
-            setImage(uri);
             props.setGuide(guide)
+            
+            setImage(uri);
+            
         })
         
     }

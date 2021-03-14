@@ -1,5 +1,5 @@
 import React, {FC, useState} from 'react';
-import {Button} from 'react-native'
+import {Button, Platform} from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
 import CreateGuide from '../screens/main/create_guide/CreateGuide';
 import CreateCard from '../screens/main/create_card/CreateCard';
@@ -31,52 +31,42 @@ const CreateStackScreen = (props) => {
                   onPress={() => {
                     const formData = new FormData()
                     console.log('url photo', props.guide.thumbnailUrl)
-                    formData.append('file', {uri: props.guide.thumbnailUrl, type: 'image/jpg', name: 'imagename.jpg'})
+                    formData.append('file', {uri: Platform.OS === "android" ? props.guide.thumbnailUrl : props.guide.thumbnailUrl.replace('file://', ''), type: 'image/jpg', name: 'imagename.jpg'})
 
                     getTokenFromStorage()
                     .then(token => {
-                      console.log('token from formData', token)
                       var url = '';
-                      // axios({
-                      //   method: 'POST',
-                      //   url: 'http://192.168.1.70:8080/i/upload',
-                      //   headers: {
-                      //     authorization: token,
-                      //     'Content-type': 'multipart/form-data'
-                      //   },
-                      //   data: formData
-                      // })
-                      fetch('http://192.168.1.70:8080/i/upload' , {
-                        method: 'post',
+                      axios({
+                        method: 'POST',
+                        url: 'http://192.168.1.70:8080/i/upload',
                         headers: {
-                          authorization: token
-                        },  
-                        body: formData
+                          authorization: token,
+                          'Content-type': 'multipart/form-data'
+                        },
+                        data: formData
                       })
-                      .then(reponse => {
-                        url = reponse.data.id;
-                        console.log('url=',url);
+                      .then(respose => {
+                        url = respose.data.id
+                        axios({
+                          method: 'POST',
+                          url: 'http://192.168.1.70:8080/guides',
+                          headers: {
+                            authorization: token
+                          },
+                          data: {
+                            description: props.guide.description,
+                            location: props.guide.location,
+                            thumbnailUrl: url,
+                            title: props.guide.title,
+                            travelDate: props.guide.travelDate 
+                          }
+                        }).then(response => console.log('response: ', response.data));
                       })
-                      return ({token, url})
-                    })
+                    
                     // .then((token)=>{
                     //   console.log('Current data', props.guide)
-                    //   axios({
-                    //     method: 'POST',
-                    //     url: 'http://192.168.1.70:8080/guides',
-                    //     headers: {
-                    //       authorization: token
-                    //     },
-                    //     data: {
-                    //       description: props.guide.description,
-                    //       location: props.guide.location,
-                    //       thumbnailUrl: '',
-                    //       title: props.guide.title,
-                    //       travelDate: props.guide.travelDate 
-                    //     }
-                    //   }).then(response => console.log('response: ', response.data));
-                      
-                    // })
+                    
+                    })
                     
                   }}
                   title="Create"
