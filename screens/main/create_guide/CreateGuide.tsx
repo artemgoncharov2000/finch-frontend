@@ -19,6 +19,39 @@ const CreateGuide = (props) => {
     const [guideId, setGuideId] = useState(props.guideId);
     const [guide, setGuide] = useState(props.guide);
 
+    const getTokenFromStorage = async () => {
+        try {
+          const token = await AsyncStorage.getItem('token');
+          return token;
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+    const getServerGuideId = async (token: string) => {
+        await axios({
+            method: 'POST',
+            url: 'http://192.168.1.70:8080/guides',
+            headers: {
+                authorization: token
+            },
+            data: {
+
+            }
+        }).then(response => {
+            const id = response.data.id;
+            // console.log('guideId:',id)
+            setGuide({
+                ...guide,
+                id: {id: id}
+            });
+            
+            props.setGuide(guide);
+            console.log('guideId',props.guide.id)
+            
+        })
+    }
+
     useEffect(() => {
         (async () => {
             if (Platform.OS !== 'web') {
@@ -28,6 +61,11 @@ const CreateGuide = (props) => {
                 }
             }
         })();
+
+        getTokenFromStorage()
+        .then(token => {
+            getServerGuideId(token);
+        })
     }, []);   
     
     const pickImage = async () => {
@@ -46,8 +84,9 @@ const CreateGuide = (props) => {
             ...guide,
             title: text
         })
-        console.log('From ', guide)
+        
         props.setGuide(guide)
+        console.log(props.guide)
     }
 
     const onChangeDescription = (text: string) => {
@@ -145,6 +184,7 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateGuide);
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,

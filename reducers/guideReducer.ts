@@ -25,9 +25,7 @@ const guideReducer = (state = initialState, action: any) => {
             return {
                 guide: {
                     description: action.data.description,
-                    id: {
-                        id: ''
-                    },
+                    id: action.data.id,
                     location: action.data.location,
                     thumbnailUrl: action.data.thumbnailUrl,
                     title: action.data.title,
@@ -40,9 +38,7 @@ const guideReducer = (state = initialState, action: any) => {
             return state.id.id;
         case GET_GUIDE:
             return state.guide;
-
         default:
-            console.log('defautl', state)
             return state;    
     }
 }
