@@ -41,10 +41,7 @@ const Login: FC<Props> = (props) => {
 
     const setTokenToStorage = async (token: string) => {
         try {
-            //await MMKV.setStringAsync("jwt_token", token);
-            console.log(token)
             await AsyncStorage.setItem('token', token)
-
         } catch (err) {
             console.log(err)
         }

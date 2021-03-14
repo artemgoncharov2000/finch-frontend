@@ -6,11 +6,18 @@ import Constants from 'expo-constants'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AddImageButtonLarge from '../../../components/buttons/AddImageButtonLarge';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import axios from 'axios';
+import { connect } from 'react-redux';
+import { setGuide, setGuideId, getGuide} from '../../../actions/guide'
+import { AsyncStorage } from 'react-native';
 
 const CreateGuide = (props) => {
 
     const [image, setImage] = useState(null);
+    const [date, setDate] = useState(new Date(1598051730000));
+    const [show, setShow] = useState(false);
+    const [guideId, setGuideId] = useState(props.guideId);
+    const [guide, setGuide] = useState(props.guide);
 
     useEffect(() => {
         (async () => {
@@ -21,8 +28,8 @@ const CreateGuide = (props) => {
                 }
             }
         })();
-    }, []);
-
+    }, []);   
+    
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -31,22 +38,57 @@ const CreateGuide = (props) => {
             quality: 1,
         });
 
-        console.log(result);
-
-        if (!result.cancelled) {
-            setImage(result.uri);
-        }
+        return result.uri;
     };
 
-    const [date, setDate] = useState(new Date(1598051730000));
-    const [show, setShow] = useState(false);
+    const onChangeTitle = (text: string) => {
+        setGuide({
+            ...guide,
+            title: text
+        })
+        
+        props.setGuide(guide)
+    }
+
+    const onChangeDescription = (text: string) => {
+        setGuide({
+            ...guide,
+            description: text
+        })
+        props.setGuide(guide)
+    }
 
     const onChangeDate = (event: any, selectedDate: any) => {
         const currentDate = selectedDate || date;
         setShow(Platform.OS === 'ios');
         setDate(currentDate);
+        setGuide({
+            ...guide,
+            travelDate: currentDate.toString()
+        })
+        props.setGuide(guide)
     };
 
+    const onChangeLocation = (text: string) => {
+        setGuide({
+            ...guide,
+            location: text
+        })
+        props.setGuide(guide)
+    }
+
+    const onImagePickerButtonPress = () => {
+        pickImage()
+        .then(uri => {
+            setGuide({
+                ...guide,
+                thumbnailUrl: uri
+            })
+            setImage(uri);
+            props.setGuide(guide)
+        })
+        
+    }
     return (
         <View style={styles.container}>
             <ScrollView>
@@ -56,15 +98,15 @@ const CreateGuide = (props) => {
                             ?
                             <Image source={{ uri: image }} style={{ width: 374, height: 180, borderRadius: 10 }} />
                             :
-                            <AddImageButtonLarge onPress={pickImage} />
+                            <AddImageButtonLarge onPress={onImagePickerButtonPress} />
                     }
                 </View>
                 <Text style={{ fontWeight: "600" }}>Name your guide</Text>
-                <InputField placeholder="Guide name" onChangeText={() => { }} />
+                <InputField placeholder="Guide name" value={guide.title} onChangeText={onChangeTitle} />
                 <Text style={{ fontWeight: "600" }}>Describe your experience</Text>
-                <InputField placeholder="Guide name" onChangeText={() => { }} numberOfLines={5} multiline={true} />
+                <InputField placeholder="Guide name" value={guide.description} onChangeText={onChangeDescription} numberOfLines={5} multiline={true} />
                 <Text style={{ fontWeight: "600" }}>When it was?</Text>
-                <View style={{paddingVertical: 10}}>
+                <View style={{ paddingVertical: 10 }}>
                     <DateTimePicker
                         testID="dateTimePicker"
                         value={date}
@@ -74,10 +116,8 @@ const CreateGuide = (props) => {
                         onChange={onChangeDate}
                     />
                 </View>
-
-
                 <Text style={{ fontWeight: "600" }}>Where it was?</Text>
-                <InputField placeholder="It was in..." onChangeText={() => { }} />
+                <InputField placeholder="It was in..." value={guide.location} onChangeText={onChangeLocation} />
                 <Text style={{ fontWeight: "600" }}>Add some cards</Text>
                 <Button title='Add card' onPress={() => { props.navigation.navigate('NewCard') }}></Button>
             </ScrollView>
@@ -85,14 +125,27 @@ const CreateGuide = (props) => {
         </View>
     )
 }
-export default CreateGuide
 
+const mapStateToProps = (state) => {
+    return {
+        guide: state.guideReducer.guide,
+        guideId: state.guideReducer.guide.id.id
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setGuide: (guide) => dispatch(setGuide(guide)),
+        setGuideId: (guideId) => dispatch(setGuideId(guideId)),
+        getGuide: () => dispatch(getGuide())
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreateGuide);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "flex-start",
         paddingHorizontal: 20
-
-
     }
 })

@@ -6,11 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AsyncStorage } from 'react-native';
 import axios from 'axios';
 
-
-
 const Profile = (props) => {
     const insets = useSafeAreaInsets();
-    const [token, setToken] = useState('')
     const [profileData, setProfileData] = useState({
         username: "", 
         email: "", 
@@ -22,7 +19,8 @@ const Profile = (props) => {
     })
     const getTokenFromStorage = async () => {
         try {
-            setToken(await AsyncStorage.getItem('token'))
+            const token = await AsyncStorage.getItem('token');
+            return token;
             
         } catch (error) {
             console.log(error)
@@ -31,17 +29,20 @@ const Profile = (props) => {
 
     useEffect(() => {
         getTokenFromStorage()
-        getProfileData()
-    })
+            .then(token => {
+                getProfileData(token)
+            })
+                   
+    },[])
 
-    const getProfileData = () => {
-        axios({
+    const getProfileData = async (token) => {
+        await axios({
             method: "get",
             url: "http://192.168.1.70:8080/users/me",
             headers: {
                 authorization: token
             }
-        }).then(response => {
+        }).then((response: any) => {
             const data = response.data
             console.log(data)
             setProfileData({
