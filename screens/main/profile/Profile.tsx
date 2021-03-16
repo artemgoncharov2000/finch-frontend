@@ -16,6 +16,8 @@ import { getProfileData } from '../../../api/profile/profileRequests';
 //@ts-ignore
 import ProfileDetailIcon from '../../../assets/icons/profile-details-icon.svg';
 import NewGuideButton from '../../../components/buttons/NewGuideButton'
+import { getGuidesByUser } from '../../../api/guide/guideRequests';
+import Guide from '../../../interfaces/Guide';
 interface Props {
     navigation: any,
     user: User,
@@ -26,7 +28,7 @@ interface Props {
 
 const Profile = (props: Props) => {
     const insets = useSafeAreaInsets();
-
+    const [guides, setGuides] = useState<Guide[]>([]);
     const getTokenFromStorage = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
@@ -40,23 +42,14 @@ const Profile = (props: Props) => {
     useEffect(() => {
         getTokenFromStorage()
             .then(token => {
+                getGuidesByUser(token, 'me')
+                    .then(list => setGuides(list));
                 getProfileData(token)
                     .then(response => {
                         const data = response.data;
-                        console.log('data: ', data)
-                        props.setUser({
-                            description: data.description,
-                            email: data.email,
-                            phone: data.phone,
-                            profileAccess: data.profileAccess,
-                            profilePhotoUrl: data.profilePhotoUrl,
-                            subscribersCount: data.subscribersCount,
-                            subscriptionsCount: data.subscriptionsCount,
-                            title: data.title,
-                            type: data.type,
-                            username: data.username
-                        })
+                        props.setUser(data);
                     })
+
                 props.setToken(token)
             })
     }, [])
@@ -68,13 +61,13 @@ const Profile = (props: Props) => {
         }}
         >
             <View style={styles.header}>
-               
+
                 <Text
                     style={{ fontWeight: "600", fontSize: 17 }}
                 >
                     {props.user.username}
                 </Text>
-                
+
             </View>
 
             <View style={styles.info}>
@@ -84,7 +77,7 @@ const Profile = (props: Props) => {
                         paddingVertical: 10,
                         flexDirection: "row",
                         alignItems: "center",
-                        
+
                     }}
                 >
                     <View
@@ -92,11 +85,11 @@ const Profile = (props: Props) => {
                             flex: 1,
                             justifyContent: "center",
                             alignItems: "center",
-                            
+
                         }}
                     >
                         <Image
-                            source={{ uri:  BASE_URL + "/i/" + props.user.profilePhotoUrl  }}
+                            source={{ uri: BASE_URL + "/i/" + props.user.profilePhotoUrl }}
                             style={{
                                 width: 64,
                                 height: 64,
@@ -112,8 +105,8 @@ const Profile = (props: Props) => {
                             alignItems: "center"
                         }}
                     >
-                        <Text>0</Text>
-                        <Text style={{fontSize: 12}}>Guides</Text>
+                        <Text>{guides.length}</Text>
+                        <Text style={{ fontSize: 12 }}>Guides</Text>
 
                     </View>
                     <View
@@ -125,7 +118,7 @@ const Profile = (props: Props) => {
                     >
                         <TouchableOpacity style={styles.touchableOpacity} onPress={() => props.navigation.navigate('ProfileStackScreen', { destination: 'Subscribers' })}>
                             <Text>{props.user.subscribersCount}</Text>
-                            <Text style={{fontSize: 12}}>Subscribers</Text>
+                            <Text style={{ fontSize: 12 }}>Subscribers</Text>
                         </TouchableOpacity>
                     </View>
                     <View
@@ -137,14 +130,14 @@ const Profile = (props: Props) => {
                     >
                         <TouchableOpacity style={styles.touchableOpacity} onPress={() => props.navigation.navigate('ProfileStackScreen', { destination: 'Subscriptions' })}>
                             <Text>{props.user.subscriptionsCount}</Text>
-                            <Text style={{fontSize: 12}}>Subsctiptions</Text>
+                            <Text style={{ fontSize: 12 }}>Subsctiptions</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
                 <View
                     style={{
                         flex: 2,
-                        
+
                         alignItems: "flex-start",
                         paddingVertical: 5
                     }}
@@ -153,7 +146,7 @@ const Profile = (props: Props) => {
                         <Text
                             style={{
                                 fontWeight: "600",
-                                
+
                             }}
                         >
                             {props.user.title}
@@ -161,28 +154,24 @@ const Profile = (props: Props) => {
                     }
                     <Text
                         style={{
-                            
+
                         }}
                     >
                         {props.user.description}
                     </Text>
 
                 </View>
-                <ChangeProfileButton title="Edit profile" onPress={() => props.navigation.navigate('ProfileStackScreen', { destination: 'Details' })}/>
+                <ChangeProfileButton title="Edit profile" onPress={() => props.navigation.navigate('ProfileStackScreen', { destination: 'Details' })} />
             </View>
             <View style={styles.body}>
-                <View style={{ zIndex: 30, position: "absolute", right: 20, bottom: 15}}>
-                    <NewGuideButton onPress={()=>{props.navigation.navigate('CreateStackScreen')}} />
+                <View style={{ zIndex: 30, position: "absolute", right: 20, bottom: 15 }}>
+                    <NewGuideButton onPress={() => { props.navigation.navigate('CreateStackScreen') }} />
                 </View>
                 <FlatList
-                    data={[
-                        { title: "Italy", subTitle: "How I spend my weekends in Italy!" },
-                        { title: "Italy", subTitle: "How I spend my weekends in Italy!" },
-                        { title: "Italy", subTitle: "How I spend my weekends in Italy!" },
-                    ]}
-                    renderItem={({ item }) => {
+                    data={guides}
+                    renderItem={({item, index}) => {
                         //const guide = getGuideFromServer('dfdf', item)
-                        return <GuidePreview title={item.title} subTitle={item.subTitle} navigation={props.navigation} />
+                        return <GuidePreview title={guides[index].title} subTitle={guides[index].description} imageId={guides[index].thumbnailUrl} onPress={() => props.navigation.navigate('GuideStackScreen', {guide: guides[index]})} />
                     }}
                 />
 
@@ -218,10 +207,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
 
     },
-   
+
     info: {
         flex: 4,
-        
+
         borderBottomColor: "#A8B0BA",
         borderBottomWidth: 1,
         paddingVertical: 20,

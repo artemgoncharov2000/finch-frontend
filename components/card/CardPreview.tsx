@@ -1,12 +1,18 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+import { BASE_URL } from '../../api/baseURL';
 
-const CardPreview = (props) => {
+interface Props {
+    title: string,
+    uri: string
+}
+
+const CardPreview = (props: Props) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity>
-                <Image style={styles.image} source={require('../../assets/test/card-preview.jpeg')}/>
+                <Image style={styles.image} source={{uri: BASE_URL + '/i/' + props.uri}}/>
                 <Text style={styles.title}>{props.title}</Text>
             </TouchableOpacity>
         </View>

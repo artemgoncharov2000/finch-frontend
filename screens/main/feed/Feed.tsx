@@ -77,12 +77,11 @@ const Feed = (props) => {
             flex: 1,
             justifyContent: "center",
             
-
         }}>
             <View style={{
                 flex: 1,
                 justifyContent: 'center',
-
+                paddingHorizontal: 20
             }}
             >
                 <SearchField />

@@ -153,7 +153,7 @@ const CreateGuide = (props: Props) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView>
+            <ScrollView keyboardDismissMode='interactive'>
                 <View style={styles.imageContainer}>
                     {
                         image

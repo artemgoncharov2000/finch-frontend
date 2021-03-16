@@ -5,17 +5,30 @@ import CardPreview from '../../../components/card/CardPreview';
 import BackButton from '../../../components/buttons/BackButton'
 import Guide from '../../../interfaces/Guide';
 import { BASE_URL } from '../../../api/baseURL';
-
+import { getCardsByGuideId } from '../../../api/card/cardRequests';
+import { AsyncStorage } from 'react-native';
+import Card from '../../../interfaces/Card';
 const GuideView = (props) => {
 
-    const [cards, setCards] = useState([
-        { title: 'Rome' },
-        { title: 'Florence' },
-        { title: 'Venice' },
-        { title: 'Piza' },
-    ]);
+    // const [cards, setCards] = useState([
+    //     { title: 'Rome' },
+    //     { title: 'Florence' },
+    //     { title: 'Venice' },
+    //     { title: 'Piza' },
+    // ]);
+
+    const getTokenFromStorage = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            return token;
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const [guide, setGuide] = useState<Guide>()
+    const [cards, setCards] = useState<Card[]>()
 
     useEffect(() => {
         console.log(props)
@@ -28,14 +41,22 @@ const GuideView = (props) => {
             thumbnailUrl: data.thumbnailUrl,
             travelDate: data.travelDate
         })
+        getTokenFromStorage()
+        .then(token => {
+            getCardsByGuideId(token, data.id)
+            .then(cards => {
+                console.log('card' + cards)
+                setCards(cards)
+            })
+        })
     }, []);
 
     return (
         <View style={styles.container}>
-            <ScrollView>
+           
             <View style={styles.imageContainer}>
                 <View style={styles.backButton}>
-                    <BackButton navigation={props.navigation} />
+                    <BackButton navigation={props.props.navigation} />
                 </View>
                 <Image style={{ height: 256, width: 415 }} source={{uri: BASE_URL + '/i/' + guide?.thumbnailUrl}} />
             </View>
@@ -50,11 +71,20 @@ const GuideView = (props) => {
                 <Text>{guide?.description}</Text>
             </View>
             <View style={styles.cardsContainer}>
-                {
-                    cards.map((item, ind) => (<CardPreview title={item.title} key={ind}/>))
-                }
+                <FlatList 
+                    data={cards}
+                    renderItem={({item, index}) => {
+                        return <CardPreview title={cards[index].title} uri={cards[index].thumbnailUrl} />
+                    }}
+                />
             </View>
-            </ScrollView>
+            
+            {/* <View style={styles.cardsContainer}>
+                {
+                    cards.map((item, ind) => ())
+                }
+            </View> */}
+           
             
         </View>
     );

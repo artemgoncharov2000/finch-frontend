@@ -16,7 +16,6 @@ const GuideStackScreen = (props) => {
                 {() => <GuideView props={props}/>}
             </GuideStack.Screen>
                 
-            
         </GuideStack.Navigator>
     );
 };

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-
+import { AsyncStorage } from 'react-native';
+import { getUserSubscribers, getUserSubscriptions } from '../../../api/profile/profileRequests';
 
 
 const ListItem = (props) => {
@@ -14,23 +15,40 @@ const ListItem = (props) => {
     )
 }
 
-const UsersList = () => {
+const UsersList = (props) => {
+    const [users, setUsers] = useState<string[]>([])
+    const getTokenFromStorage = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            return token;
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        getTokenFromStorage()
+        .then(token => {
+            if (props.type === 'Subscribers') {
+                getUserSubscribers(token)
+                .then(users => {
+                    setUsers(users);
+                })
+            } else if (props.type === 'Subscriptions'){
+                getUserSubscriptions(token)
+                .then (users => {
+                    setUsers(users)
+                })
+            }
+        })
+    }, [])
+
     return (
         <View style={styles.container}>
             <FlatList
-                data={[
-                    {key: 'Devin'},
-                    {key: 'Dan'},
-                    {key: 'Dominic'},
-                    {key: 'Jackson'},
-                    {key: 'James'},
-                    {key: 'Joel'},
-                    {key: 'John'},
-                    {key: 'Jillian'},
-                    {key: 'Jimmy'},
-                    {key: 'Julie'},
-                ]}
-                renderItem={({item}) => <ListItem value={item.key}/>}
+                data={users}
+                renderItem={({item}) => <ListItem value={item}/>}
             />
         </View>
     );    
