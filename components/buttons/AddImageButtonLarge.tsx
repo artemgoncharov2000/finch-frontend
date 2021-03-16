@@ -21,13 +21,7 @@ const AddImageButtonLarge: FC<Props> = (props) => {
                     backgroundColor: 'rgba(60, 60, 67, 0.3)',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderRadius: 10,
-                    shadowOffset: {
-                        width: 0,
-                        height: 2,
-                    },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 10,
+                    
                     marginBottom: 20
                 }}
             >
@@ -36,7 +30,7 @@ const AddImageButtonLarge: FC<Props> = (props) => {
                     paddingTop: 10
                 }}
                 >
-                    Нажмите, чтобы добавить изображение
+                    Tap to add an image
                 </Text>
             </View>
         </TouchableOpacity>

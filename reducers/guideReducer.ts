@@ -1,4 +1,10 @@
-import { SET_GUIDE_ID, SET_GUIDE, GET_GUIDE, GET_GUIDE_ID } from '../actions/actionTypes'
+import { SET_GUIDE_ID, SET_GUIDE} from '../actions/actionTypes'
+import Guide from '../interfaces/Guide';
+
+interface Action{
+    type: string,
+    payload: Guide | string
+}
 
 const initialState = {
     guide: {
@@ -13,31 +19,27 @@ const initialState = {
     }
 }
 
-const guideReducer = (state = initialState, action: any) => {
+const guideReducer = (state = initialState, action: Action) => {
     switch (action.type) {
         case SET_GUIDE_ID:
             return {
                 ...state,
-                id: { id: action.guideId }
+                guide: {
+                    ...state.guide,
+                    id: { id: action.payload }
+                }
             }
         case SET_GUIDE:
-            //console.log('reducer', action.data)
             return {
                 guide: {
-                    description: action.data.description,
-                    id: action.data.id,
-                    location: action.data.location,
-                    thumbnailUrl: action.data.thumbnailUrl,
-                    title: action.data.title,
-                    travelDate: action.data.travelData
+                    description: action.payload.description,
+                    id: action.payload.id,
+                    location: action.payload.location,
+                    thumbnailUrl: action.payload.thumbnailUrl,
+                    title: action.payload.title,
+                    travelDate: action.payload.travelData
                 }
-                
-
             };
-        case GET_GUIDE_ID:
-            return state.id.id;
-        case GET_GUIDE:
-            return state.guide;
         default:
             return state;    
     }

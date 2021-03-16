@@ -1,10 +1,25 @@
-export const GET_USER= 'GET_USER';
+//User
+export const SET_USER = "SET_USER";
+export const SET_USER_DESCRIPTION = "SET_USER_DESCRIPTION";
+export const SET_USER_EMAIL = "SET_USER_EMAIL";
+export const SET_USER_PHONE = "SET_USER_PHONE";
+export const SET_USER_PROFILE_ACCESS = "SET_USER_PROFILE_ACCESS";
+export const SET_USER_PROFILE_URL = "SET_USER_PROFILE_URL";
+export const SET_USER_SUBSCRIBERS_COUNT = "SET_USER_SUBSCRIBERS_COUNT";
+export const SET_USER_SUBSCRIPTIONS_COUNT = "SET_USER_SUBSCRIPTIONS_COUNT";
+export const SET_USER_TITLE = "SET_USER_TITLE";
+export const SET_USER_TYPE = "ME_FULL_ACCESS";
 
+
+//Guide
 export const SET_GUIDE_ID = 'SET_GUIDE_ID';
 export const SET_GUIDE = 'SET_GUIDE';
-export const GET_GUIDE_ID = 'GET_GUIDE_ID'
-export const GET_GUIDE = 'GET_GUIDE';
 
+
+//Card
 export const SET_CARD = 'SET_CARD';
 export const GET_CARD = 'GET_CARD';
 
+//Token
+export const SET_TOKEN = 'SET_TOKEN';
+export const GET_TOKEN = 'GET_TOKEN';

@@ -1,9 +1,9 @@
 import {SET_CARD, GET_CARD} from '../actions/actionTypes'
-import guideReducer from './guideReducer'
+
 
 const initialState = {
     card: {
-        content: '',
+        content: [],
         guideId: {
             id: ''
         },

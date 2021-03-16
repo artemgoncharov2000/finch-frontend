@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { View, StyleSheet, Dimensions, Text } from 'react-native';
-import {TextInput, TouchableOpacity} from 'react-native-gesture-handler'
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
 
-const {height, width} = Dimensions.get('screen');
+const { height, width } = Dimensions.get('screen');
 
 interface Props {
     title: string,
@@ -11,12 +11,12 @@ interface Props {
 }
 
 const ChangeProfileButton: FC<Props> = (props) => {
-    return(
-        <View style={{padding: 10}}>
-            <TouchableOpacity style={styles.container} onPress={props.onPress}>
+    return (
+        <TouchableOpacity onPress={props.onPress}>
+            <View style={styles.container}>
                 <Text style={styles.text}>{props.title}</Text>
-            </TouchableOpacity>
-        </View>
+            </View>
+        </TouchableOpacity>
     )
 }
 
@@ -27,16 +27,12 @@ const styles = StyleSheet.create({
 
         alignItems: 'center',
         justifyContent: 'center',
-        alignSelf: 'center',
-        
-        paddingHorizontal: 7,
-        paddingVertical: 5,
+        height: 40,
         borderWidth: 1,
-        borderRadius: 10,
-        borderColor: "#A8B0BA"
+        borderColor: "#007AFF"
     },
     text: {
         fontWeight: "bold",
-        color: 'black'
+        color: '#007AFF'
     }
 })

@@ -1,10 +1,19 @@
 import React, { FC } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+import { BASE_URL } from '../../api/baseURL';
 
-const GuidePreview = (props) => {
+interface Props {
+    title: string,
+    imageId?: string,
+    subTitle: string,
+    onPress: () => void
+}
+
+
+const GuidePreview : FC<Props> = (props) => {
     return (
-        <TouchableOpacity onPress={()=>{console.log("pressed")}}>
+        <TouchableOpacity onPress={props.onPress}>
             <View
                 style={{
                     backgroundColor: "white",
@@ -15,11 +24,11 @@ const GuidePreview = (props) => {
                     },
                     shadowOpacity: 0.2,
                     shadowRadius: 10,
-                    marginBottom: 20
+                    margin: 20
                 }}
             >
                 <Image
-                    source={require('../../assets/test/guide-preview.jpg')}
+                    source={{uri: BASE_URL + '/i/' + props.imageId}}
                     style={{
                         height: 180,
                         width: 374,
@@ -36,7 +45,7 @@ const GuidePreview = (props) => {
                         paddingVertical: 5
                     }}
                 >
-                    Title
+                    {props.title}
                         </Text>
                 <Text
                     style={{
@@ -48,8 +57,8 @@ const GuidePreview = (props) => {
                         paddingVertical: 5
                     }}
                 >
-                    Sub title
-                        </Text>
+                    {props.subTitle}
+                </Text>
             </View>
         </TouchableOpacity>
 

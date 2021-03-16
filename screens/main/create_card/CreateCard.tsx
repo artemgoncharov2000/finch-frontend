@@ -4,79 +4,71 @@ import InputField from '../../../components/input_fields/InputField';
 import * as ImagePicker from 'expo-image-picker'
 import AddContentButton from '../../../components/buttons/AddContentButton';
 import AddImageButtonMiddle from '../../../components/buttons/AddImageButtonMiddle';
-import { setCard, getCard } from '../../../actions/card';
+import { setCard, getCard } from '../../../actions/cardActions';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { AsyncStorage } from 'react-native';
+import { BASE_URL } from '../../../api/baseURL';
+
 
 
 const CreateCard = (props) => {
 
-
     const [image, setImage] = useState(null);
     const [previewImageUri, setPreviewImageUri] = useState(null)
-    const [content, setContent] = useState([])
-    const [card, setCard] = useState(props.card)
     const [token, setToken] = useState('')
 
     const getTokenFromStorage = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
             return token;
-            
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
     }
 
     useEffect(()=> {
         getTokenFromStorage()
         .then(t => setToken(t));
-        setCard({
-            ...card,
+        props.setCard({
+            ...props.card,
             guideId: {id: props.guideId}
-        });
-        props.setCard(card)
+        })
     },[])
 
 
     const onChangeTitle = (text: string) => {
-        setCard({
-            ...card,
+        props.setCard({
+            ...props.card,
             title: text
         });
-
-        props.setCard(card);
-        console.log('card', card)
     }
 
     const onChangeLocation = (text: string) => {
-        setCard({
-            ...card,
+        props.setCard({
+            ...props.card,
             location: text
         });
-        props.setCard(card);
-        console.log('props.card', props.card)
     }
 
     const onAddTextButtonPress = () => {
-        const copy = [...content]
+        const content = [...props.card.content]
         const item = {
             type: 'text',
             text: 'ex. The story begins with...',
         }
-        copy.push(item)
-        setContent([...copy])
-        console.log('content: ', JSON.stringify(content))
+        content.push(item)
+        props.setCard({
+            ...props.card,
+            content: content
+        })
     }
 
     const onAddImageButtonPress = () => {
-        let promise = new Promise((resolve, reject) => {
-            pickImage()
-            image ? resolve(image) : reject()
-        })
-        promise.then((image) => {
-            uploadImage(image, 'content')
+        pickImage()
+        .then(uri => {
+            uploadImage(uri, 'content');
+            setImage(uri)
         })
 
     }
@@ -87,14 +79,12 @@ const CreateCard = (props) => {
             aspect: [3, 2],
             quality: 1,
         });
-
-        if (!result.cancelled) {
-            setImage(result.uri)
-        }
+        // if (!result.cancelled) {
+        // }
+        return result.uri;
     };
 
     const uploadImage = async (uri: string, type: string) => {
-        
         const formData = new FormData()
                     formData.append('file', { 
                       uri: Platform.OS === "android" ? uri : uri.replace('file://', ''), 
@@ -103,7 +93,7 @@ const CreateCard = (props) => {
                     })
         axios({
             method: 'POST',
-            url: 'http://192.168.1.70:8080/i/upload',
+            url: BASE_URL + '/i/upload',
             headers: {
                 authorization: token,
                 'Content-type': 'multipart/form-data'
@@ -111,32 +101,26 @@ const CreateCard = (props) => {
             data: formData
         })
         .then(response => {
-            const imageId = response.data.id;
             if (type === 'preview') {
-                setCard({
-                    ...card,
-                    thumbnailUrl: imageId
+                props.setCard({
+                    ...props.card,
+                    thumbnailUrl: response.data.id
                 })
-                console.log(card)
-                props.setCard(card)
             } else if (type === 'content') {
-                const copy = [...content];
+                const content = [...props.card.content];
                 const item = {
                     type: 'image',
                     uri: image,
                     id: imageId
                 }
-                copy.push(item)
-                setContent([...copy])
-                setCard({
-                    ...card,
-                    content: JSON.stringify(content)
+                content.push(item)
+                props.setCard({
+                    ...props.card,
+                    content: content
                 })
-                props.setCard(card)
-
             }
         })
-        .catch((error)=>console.log(error))
+        .catch((error)=>console.error(error))
         
     }
 
@@ -149,11 +133,10 @@ const CreateCard = (props) => {
         });
 
         if (!result.cancelled) {
-            console.log('uri', result.uri);
             try {
                 uploadImage(result.uri, 'preview')
             } catch(err) {
-                console.log(err)
+                console.error(err)
             }
             setPreviewImageUri(result.uri);
         }
@@ -163,9 +146,9 @@ const CreateCard = (props) => {
         <View style={styles.container}>
             <ScrollView>
                 <Text style={{ fontWeight: "600" }}>Name your card</Text>
-                <InputField placeholder="Card name" value={card.title} fontWeight="600" fontSize={20} onChangeText={onChangeTitle} />
+                <InputField placeholder="Card name" value={props.card.title} fontWeight="600" fontSize={20} onChangeText={onChangeTitle} />
                 <Text style={{ fontWeight: "600" }}>Location</Text>
-                <InputField placeholder="ex. The Eiffel Tower" value={card.location}  fontWeight="400" fontSize={14} onChangeText={onChangeLocation} />
+                <InputField placeholder="ex. The Eiffel Tower" value={props.card.location}  fontWeight="400" fontSize={14} onChangeText={onChangeLocation} />
                 <Text style={{ fontWeight: "600" }}>Add a picture to your card</Text>
                 {
                     previewImageUri
@@ -176,7 +159,7 @@ const CreateCard = (props) => {
                 }
 
                 <Text style={{ fontWeight: "600" }}>Tell us more about your experience</Text>
-                {content.map((item, key) => (
+                {props.card.content.map((item, key) => (
                     item.type == 'text'
                         ?
                         <InputField
@@ -195,9 +178,7 @@ const CreateCard = (props) => {
                     style={{ flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 50, paddingVertical: 20 }}
                 >
                     <AddContentButton type="text" onPress={onAddTextButtonPress} />
-                    <AddContentButton type="image" onPress={onAddImageButtonPress}
-
-                    />
+                    <AddContentButton type="image" onPress={onAddImageButtonPress}/>
                 </View>
             </ScrollView>
 
@@ -215,7 +196,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         setCard: (card) => dispatch(setCard(card)),
-        getCard: () => dispatch(getCard())
     }
 }
 

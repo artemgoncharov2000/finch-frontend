@@ -11,14 +11,22 @@ interface Props {
     fontWeight?: any;
     maxLength?: number;
     value?: string;
-    onChangeText: (text: string) => void;
+    editable?: boolean;
+    onChangeText: (value: string) => void;
 }
 
 const InputField: FC<Props> = (props) => {
-    const [color, setColor] = useState('rgba(60, 60, 67, 0.3)') 
+    const [color, setColor] = useState('rgba(60, 60, 67, 0.3)'); 
+    const [value, setValue] = useState(props.value);
     const onEndEditing = () => {
         setColor('rgba(60, 60, 67, 0.3)')
     }
+
+    const handleOnChange = (value: string) => {
+        setValue(value);
+        props.onChangeText(value)
+    }
+
     return (
         <View style={{
             
@@ -35,16 +43,16 @@ const InputField: FC<Props> = (props) => {
                     fontWeight: props.fontWeight || "400",
                     paddingBottom: 5
                 }} 
-                value={props.value || undefined}
+                value={value || undefined}
+                editable={props.editable || true}
                 maxLength={props.maxLength || undefined}
                 placeholder={props.placeholder || undefined} 
                 numberOfLines={props.numberOfLines || 1}
                 secureTextEntry={props.secureTextEntry || false } 
                 multiline={props.multiline || false}
-                onChangeText={props.onChangeText} 
+                onChangeText={handleOnChange} 
                 onFocus={() => {setColor('black')}}
                 onEndEditing={onEndEditing} 
-
             />
         </View>
     );

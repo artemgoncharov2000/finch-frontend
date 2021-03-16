@@ -6,10 +6,16 @@ import Favorites from '../screens/main/favorites/Favorites';
 import Profile from '../screens/main/profile/Profile';
 //@ts-ignore 
 import FeedIcon from '../assets/nav/feed-icon.svg'
+//@ts-ignore
+import FeedIconFilled from '../assets/nav/feed-icon-filled.svg'
 //@ts-ignore 
 import FavIcon from '../assets/nav/favorites-icon.svg'
 //@ts-ignore
+import FavIconFilled from '../assets/nav/favorites-icon-filled.svg'
+//@ts-ignore
 import ProfIcon from '../assets/nav/profile-icon.svg'
+//@ts-ignore
+import ProfIconFilled from '../assets/nav/profile-icon-filled.svg'
 
 const Tab = createBottomTabNavigator()
 const MainStackScreen: FC = () => {
@@ -19,20 +25,21 @@ const MainStackScreen: FC = () => {
                 tabBarIcon: ({ focused, color, size }) => {
                 if (route.name === 'Feed') {
                     return (
-                        focused ? <FeedIcon fill="#fff"/> : <FeedIcon/>
+                        focused ? <FeedIconFilled fill="#000" width="26" height="26"/> : <FeedIcon fill="#000" width="26" height="26"/>
                     );
                 } else if (route.name === 'Favorites') {
                     return (
-                        focused ? <FavIcon fill="#fff"/> : <FavIcon/>
+                        focused ? <FavIconFilled fill="#000"  width="26" height="26"/> : <FavIcon fill="#000"  width="26" height="26"/>
                     );
                 } else if (route.name === 'Profile') {
                     return (
-                        <ProfIcon/>
+                        focused ? <ProfIconFilled fill="#000" width="26" height="26"/> : <ProfIcon fill="#000" width="26" height="26"/> 
                     );
                 }
                 },
             })}
             tabBarOptions={{
+                showLabel: false,
                 activeTintColor: 'black',
                 inactiveTintColor: 'gray',
             }}

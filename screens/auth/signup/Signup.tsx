@@ -1,11 +1,14 @@
 import React, { FC, useState } from 'react'
-import {StyleSheet, Text, View, Image,  } from 'react-native';
+import {StyleSheet, Text, View, Button } from 'react-native';
 import DefaultButton from '../../../components/buttons/DefaultButton'
 import InputField from '../../../components/input_fields/InputField';
 //@ts-ignore 
 import FinchIcon from '../../../assets/finch-logo.svg' 
 import axios from 'axios';
 import { MMKV } from 'react-native-mmkv';
+import { BASE_URL } from '../../../api/baseURL';
+import { ScrollView } from 'react-native-gesture-handler';
+import {registerUser} from '../../../api/auth/authentification'
 interface Props {
     navigation: any
 }
@@ -44,56 +47,37 @@ const Signup: FC<Props> = (props) => {
             password: password
         })
     }
-
-    const registerUser = (user: User) => {
-        console.log('Hello world')
-        // fetch('https://finch-backend-ty3pscheea-lz.a.run.app/auth/register', {
-        //     method: 'POST',
-        //     headers: {
-    
-        //     },
-        //     body: JSON.stringify({
-        //         email: user.email,
-        //         password: user.password,
-        //         username: user.username
-        //     })
-        // });
-        axios({
-            method: 'POST',
-            url: 'http://192.168.1.70:8080/auth/register',
-            data: {
-                email: user.email,
-                password: user.password,
-                username: user.username
-            }
-        }).then(response => {console.log(response.data)})
-
-        
-    }
-
     return(
         <View style={styles.container}>
+            
             <View style={styles.titleView}>
-                {/* <Image source={require('../../../assets/finch-logo.png')}/> */}
                 <FinchIcon/>
-                <Text style={styles.title}>Создать Аккаунт</Text>
-                <Text style={styles.subTitle}>С помощью аккаунта, {"\n"} сможешь сохранять интересные путеводители!</Text>
+                <Text style={styles.title}>Sign Up</Text>
+                <Text style={styles.subTitle}>With your account, {"\n"} you can save interesting travel guides!</Text>
             </View>
             <View style={styles.inputView}>
-                <InputField placeholder="Ник" secureTextEntry={false} onChangeText={text => onUsernameChange(text)}/>
-                <InputField placeholder="Электронная почта" secureTextEntry={false} onChangeText={text => onEmailChange(text)}/>
-                <InputField placeholder="Пароль" secureTextEntry={true} onChangeText={text => onPasswordChange(text)}/>
+                <InputField placeholder="Username" secureTextEntry={false} onChangeText={text => onUsernameChange(text)}/>
+                <InputField placeholder="Email" secureTextEntry={false} onChangeText={text => onEmailChange(text)}/>
+                <InputField placeholder="Password" secureTextEntry={true} onChangeText={text => onPasswordChange(text)}/>
             </View>
             <View style={styles.buttonView}>
                 <DefaultButton 
                     title="Create account" 
                     onPress={()=>{
                         registerUser(user)
-                        props.navigation.navigate('Login')
+                        .then(result => {
+                            console.log('result ', result)
+                            if (result === 'Success') {
+                                props.navigation.navigate('Login');
+                            } else if (result) {
+                                alert('Something goes wrong!');
+                            }
+                        })
                     }}
                 />
-                <View>
-                    
+                <View style={styles.loginContainer}>
+                    <Text style={styles.loginText}>Have an account?</Text>
+                    <Button title="Sign in" onPress={()=>{props.navigation.navigate('Login')}} />
                 </View>
             </View>
         </View>
@@ -107,10 +91,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        paddingHorizontal: 20
     },
+    
     titleView: {
-        flex: 6,
+        flex: 4,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -135,8 +120,17 @@ const styles = StyleSheet.create({
     },
     buttonView: {
         flex: 2,
-        justifyContent: 'center',
-        alignItems: 'center'
+        justifyContent: "center",
+        paddingBottom: 40
     },
-    
+    loginContainer: {
+        paddingTop: 10,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        
+    },
+    loginText: {
+        color: "grey"
+    }
 })

@@ -6,6 +6,7 @@ import Signup from './screens/auth/signup/Signup';
 import MainStackScreen from './navigation/MainStackScreen';
 import CreateStackScreen from './navigation/CreateStackScreen'
 import ProfileStackScreen from './navigation/ProfileStackScreen';
+import GuideStackScreen from './navigation/GuideStackScreen'
 import { Provider } from 'react-redux';
 import configureStore from './store'
 
@@ -31,11 +32,12 @@ const App = () => {
             
           </>
         )} */}
-          <RootStack.Screen name="Singup" component={Signup} />
+          <RootStack.Screen name="Signup" component={Signup} />
           <RootStack.Screen name="Login" component={Login} />
           <RootStack.Screen name="MainStackScreen" component={MainStackScreen} />
           <RootStack.Screen name="CreateStackScreen" component={CreateStackScreen} />
           <RootStack.Screen name="ProfileStackScreen" component={ProfileStackScreen} />
+          <RootStack.Screen name="GuideStackScreen" component={GuideStackScreen}/>
 
         </RootStack.Navigator>
       </NavigationContainer>

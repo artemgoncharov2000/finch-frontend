@@ -1,34 +1,33 @@
 import React, { FC, useState } from 'react'
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {StyleSheet, Text, View, Button} from 'react-native';
 import DefaultButton from '../../../components/buttons/DefaultButton'
 import InputField from '../../../components/input_fields/InputField';
 import Signup from '../signup/Signup'
 //@ts-ignore 
 import FinchIcon from '../../../assets/finch-logo.svg' 
-import MMKVStorage from "react-native-mmkv-storage";
 import axios from 'axios';
 import { AsyncStorage } from 'react-native';
-interface Props {
-    navigation: any
-}
-const MMKV = new MMKVStorage.Loader().initialize();
+import { BASE_URL } from '../../../api/baseURL';
+import { getToken, setToken } from '../../../actions/tokenActions';
+import { connect } from 'react-redux';
+import {loginUser} from '../../../api/auth/authentification';
+
 interface User {
     username: string,
-    password: string
+    password: string,
 }
 
-const Login: FC<Props> = (props) => {
+const Login = (props) => {
 
-   // const [token, setToken] = useState<string>('')
     const [user, setUser] = useState<User>({
         username: '',
         password: ''
     })   
 
-    const onUsernameChange = (username: string) => {
+    const onUsernameChange = (value: string) => {
         setUser({
             ...user,
-            username: username
+            username: value
         })
     }
 
@@ -48,60 +47,60 @@ const Login: FC<Props> = (props) => {
         
     }
 
-    const loginUser = (user: User) => {
-        console.log(user)
-        axios({
-            method: 'POST',
-            url: 'http://192.168.1.70:8080/auth/login',
-            data: {
-                username: user.username,
-                password: user.password
-            }
-        }).then(response => {
-            let headers = response.headers
-            console.log(headers['authorization'])
-            setTokenToStorage(headers['authorization'])
-        })
-    }
-
     return(
         <View style={styles.container}>
             <View style={styles.titleView}>
                 <FinchIcon/>
-                <Text style={styles.title}>Вход</Text>
-                <Text style={styles.subTitle}>Добро пожаловать, {"\n"} приключения уже ждут вас!</Text>
+                <Text style={styles.title}>Sign In</Text>
+                <Text style={styles.subTitle}>Welcome, adventures are waiting for you!</Text>
             </View>
             <View style={styles.inputView}>
-                <InputField placeholder="Имя пользователя" secureTextEntry={false} onChangeText={text => onUsernameChange(text)}/>
-                <InputField placeholder="Пароль" secureTextEntry={true} onChangeText={text => onPasswordChange(text)}/>
+                <InputField placeholder="Nickname" secureTextEntry={false} onChangeText={text => onUsernameChange(text)}/>
+                <InputField placeholder="Password" secureTextEntry={true} onChangeText={text => onPasswordChange(text)}/>
             </View>
             <View style={styles.buttonView}>
                 <DefaultButton 
-                    title="Log in" 
+                    title="Sign in" 
                     onPress={()=> {
                         loginUser(user)
-                        props.navigation.navigate('MainStackScreen')
+                        .then(token => {
+                            setTokenToStorage(token);
+                            props.navigation.navigate('MainStackScreen');
+                        })
                     }}
                 />
-                <View>
-                    
+                <View style={styles.signupContainer}>
+                    <Text style={styles.signupText}>No account?</Text>
+                    <Button title="Sign Up" onPress={()=>{props.navigation.navigate('Signup')}} />
                 </View>
             </View>
         </View>
     );
 }
 
-export default Login;
+const mapStateToProps = (state) => {
+    return {
+        token: state.tokenReducer.token
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setToken: (value) => dispatch(setToken(value)),
+        getToken: () => dispatch(getToken())
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
 
 const styles = StyleSheet.create({
     container: {
         backgroundColor: 'white',
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        paddingHorizontal: 20
     },
     titleView: {
-        flex: 6,
+        flex: 4,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -112,8 +111,8 @@ const styles = StyleSheet.create({
         paddingBottom: 16
     },
     subTitle: {
+        color: 'gray',
         textAlign: "center",
-        color: 'gray'
     },
     inputView: {
         flex: 4
@@ -127,7 +126,17 @@ const styles = StyleSheet.create({
     buttonView: {
         flex: 2,
         justifyContent: 'center',
-        alignItems: 'center'
+        
     },
+    signupContainer: {
+        paddingTop: 10,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        
+    },
+    signupText: {
+        color: "grey"
+    }
     
 })

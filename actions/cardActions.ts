@@ -1,6 +1,7 @@
+import Card from '../interfaces/Card'
 import {GET_CARD, SET_CARD} from './actionTypes'
 
-export const setCard = (card: object) => (
+export const setCard = (card: Card) => (
     {
         type: SET_CARD,
         data: card

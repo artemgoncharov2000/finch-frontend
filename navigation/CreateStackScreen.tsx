@@ -6,6 +6,7 @@ import CreateCard from '../screens/main/create_card/CreateCard';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { AsyncStorage } from 'react-native';
+import { BASE_URL } from '../api/baseURL';
 
 const CreateStackScreen = (props) => {
   const CreateStack = createStackNavigator();
@@ -33,41 +34,23 @@ const CreateStackScreen = (props) => {
           headerRight: () => (
             <Button
               onPress={() => {
-                const formData = new FormData()
-                formData.append('file', {
-                  uri: Platform.OS === "android" ? props.guide.thumbnailUrl : props.guide.thumbnailUrl.replace('file://', ''),
-                  type: 'image/jpg',
-                  name: 'imagename.jpg'
-                })
-
-                var url = '';
+                console.log('props.guide', props.guide)
                 axios({
-                  method: 'POST',
-                  url: 'http://192.168.1.70:8080/i/upload',
+                  method: 'PUT',
+                  url: BASE_URL + "/guides",
                   headers: {
-                    authorization: token,
-                    'Content-type': 'multipart/form-data'
+                    authorization: token
                   },
-                  data: formData
+                  data: {
+                    description: props.guide.description,
+                    location: props.guide.location,
+                    thumbnailUrl: props.guide.thumbnailUrl,
+                    title: props.guide.title,
+                    travelDate: props.guide.travelDate
+                  }
                 })
-                  .then(respose => {
-                    url = respose.data.id
-                    axios({
-                      method: 'PUT',
-                      url: 'http://192.168.1.70:8080/guides',
-                      headers: {
-                        authorization: token
-                      },
-                      data: {
-                        description: props.guide.description,
-                        location: props.guide.location,
-                        thumbnailUrl: url,
-                        title: props.guide.title,
-                        travelDate: props.guide.travelDate
-                      }
-                    }).then(response => console.log('response: ', response.data));
-                  })
-
+                .then(response => console.log('response: ', response.data))
+                .catch(error => console.error(error))
               }}
               title="Create"
               color="#007AFF"
@@ -81,32 +64,30 @@ const CreateStackScreen = (props) => {
         name="NewCard"
         component={CreateCard}
         options={{
-
+          
           headerRight: () => (
             <Button
-              onPress={() => { 
-               
-                const item = {
-                  content: props.card.content,
-                  guideId: props.card.guideId.id,
-                  location: props.card.location,
-                  tags: props.card.tags,
-                  thumbnailUrl: props.card.thumbnailUrl,
-                  title: props.card.title    
-                }
-                console.log('item', item);
+              onPress={() => {
+                console.log('props.card', props.card)
                 axios({
                   method: 'POST',
-                  url: 'http://192.168.1.70:8080/cards',
+                  url: BASE_URL + "/cards",
                   headers: {
                     authorization: token
                   },
-                  data: item
+                  data: {
+                    content: JSON.stringify(props.card.content),
+                    guideId: props.card.guideId.id,
+                    location: props.card.location,
+                    tags: props.card.tags,
+                    thumbnailUrl: props.card.thumbnailUrl,
+                    title: props.card.title
+                  }
                 })
-                .then(response => console.log('response: ', response.data))
-                .catch(error => {
-                  console.log(error)
-                })
+                  .then(response => console.log('response: ', response.data))
+                  .catch(error => {
+                    console.log(error)
+                  })
               }}
               title="add"
               color="#007AFF"
