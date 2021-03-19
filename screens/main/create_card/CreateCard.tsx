@@ -9,6 +9,8 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import { AsyncStorage } from 'react-native';
 import { BASE_URL } from '../../../api/baseURL';
+import { createCard } from '../../../api/card/cardRequests';
+import {Card, ContentItem} from '../../../interfaces/Card';
 
 
 
@@ -17,6 +19,14 @@ const CreateCard = (props) => {
     const [image, setImage] = useState(null);
     const [previewImageUri, setPreviewImageUri] = useState(null)
     const [token, setToken] = useState('')
+    const [card, setCard] = useState<Card>({
+        content: [],
+        guideId: {id: ''},
+        location: '',
+        tags: [],
+        thumbnailUrl: '',
+        title: ''
+    })
 
     const getTokenFromStorage = async () => {
         try {
@@ -38,30 +48,40 @@ const CreateCard = (props) => {
 
 
     const onChangeTitle = (text: string) => {
-        props.setCard({
-            ...props.card,
+        // props.setCard({
+        //     ...props.card,
+        //     title: text
+        // });
+        setCard(prevState => ({
+            ...prevState,
             title: text
-        });
+        }))
     }
 
     const onChangeLocation = (text: string) => {
-        props.setCard({
-            ...props.card,
+        // props.setCard({
+        //     ...props.card,
+        //     location: text
+        // });
+        setCard(prevState => ({
+            ...prevState,
             location: text
-        });
+        }))
     }
 
     const onAddTextButtonPress = () => {
-        const content = [...props.card.content]
-        const item = {
+        const item: ContentItem = {
             type: 'text',
-            text: 'ex. The story begins with...',
+            value: 'ex. The story begins with...',
         }
-        content.push(item)
-        props.setCard({
-            ...props.card,
-            content: content
-        })
+        // props.setCard({
+        //     ...props.card,
+        //     content: content
+        // })
+        setCard(prevState => ({
+            ...prevState,
+            content: prevState.content.concat([item])
+        }))
     }
 
     const onAddImageButtonPress = () => {
@@ -76,7 +96,6 @@ const CreateCard = (props) => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
-            aspect: [3, 2],
             quality: 1,
         });
         // if (!result.cancelled) {
@@ -141,6 +160,23 @@ const CreateCard = (props) => {
             setPreviewImageUri(result.uri);
         }
     }
+
+    React.useLayoutEffect(() => {
+        props.navigation.setOptions({
+            headerRight: () => (
+                <Button
+                    onPress={()=>{
+                        getTokenFromStorage()
+                        .then(token => {
+                            //updateGuide(token, props.guide);
+                            createCard(token, props.card)
+                        })
+                    }}
+                    title="Add"
+                />
+            ),
+        });
+    }, [props.navigation]);
 
     return (
         <View style={styles.container}>

@@ -6,7 +6,7 @@ import Constants from 'expo-constants'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AddImageButtonLarge from '../../../components/buttons/AddImageButtonLarge';
 import { ScrollView } from 'react-native-gesture-handler';
-import { setUserDescription, setUserEmail, setUserPhone, setUserTitle } from '../../../actions/userActions';
+import { setUserDescription, setUserEmail, setUserPhone, setUserTitle, setUserProfileUrl } from '../../../actions/userActions';
 import { connect } from 'react-redux';
 import { AsyncStorage } from 'react-native';
 import axios from 'axios';
@@ -21,59 +21,55 @@ interface Props {
     setUserEmail: (value: string) => void,
     setUserPhone: (value: string) => void,
     setUserTitle: (value: string) => void,
+    setUserProfileUrl: (value: string) => void
 }
 
 const ProfileDetails = (props: Props) => {
-    const [state, setState] = useState({
-        imageUri: props.user.profilePhotoUrl,
+    console.log(props.user.profilePhotoUrl);
+    const [user, setUser] = useState({
+        profilePhotoUrl: props.user.profilePhotoUrl,
         email: props.user.profilePhotoUrl,
         phone: props.user.phone,
         title: props.user.title,
         description: props.user.description
     })
-    // const [imageUri, setImageUri] = useState(props.user.profilePhotoUrl);
-    // const [email, setEmail] = useState(props.user.email);
-    // const [phone, setPhone] = useState(props.user.phone);
-    // const [title, setTitle] = useState(props.user.title);
-    // const [description, setDescription] = useState(props.user.description);
-
+    
     const getTokenFromStorage = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
+            
             return token;
         } catch (error) {
             console.log(error)
         }
     }
 
-    useEffect(() => {
-        getTokenFromStorage();
-    }, [])
+    
 
 
     const onChangeEmail = (value: string) => {
-        setState(prevState => ({
+        setUser(prevState => ({
             ...prevState,
             email: value
         }));
     }
 
     const onChangePhone = (value: string) => {
-        setState(prevState => ({
+        setUser(prevState => ({
             ...prevState,
             phone: value
         }));
     }
 
     const onChangeTitle = (value: string) => {
-        setState(prevState => ({
+        setUser(prevState => ({
             ...prevState,
             title: value
         }));
     }
 
     const onChangeDescription = (value: string) => {
-        setState(prevState => ({
+        setUser(prevState => ({
             ...prevState,
             description: value
         }))
@@ -83,9 +79,9 @@ const ProfileDetails = (props: Props) => {
         pickImage()
             .then(uri => {
                 uploadImage(uri);
-                setState(prevState => ({
+                setUser(prevState => ({
                     ...prevState,
-                    imageUri: uri
+                    profilePhotoUrl: uri
                 }))
             })
     }
@@ -111,6 +107,7 @@ const ProfileDetails = (props: Props) => {
             name: 'imagename.jpg'
         })
         console.log('token: ', props.token)
+
         await axios({
             method: 'POST',
             url: BASE_URL + '/i/upload',
@@ -123,16 +120,12 @@ const ProfileDetails = (props: Props) => {
         .then(response => {
             const id = response.data.id
             console.log('url', BASE_URL + '/i/' + id)
-            axios({
-                method: 'GET',
-                url: BASE_URL + '/i/' + id,
-                data: {}
-            })
-            .then(resp => {
-                console.log(resp.data);
-            })
-            .catch(error => console.log(error));
+            setUser(prevState => ({
+                ...prevState,
+                profilePhotoUrl: id
+            }))
         })
+        .catch(error => {console.error(error)});
     }
 
     React.useLayoutEffect(() => {
@@ -144,11 +137,11 @@ const ProfileDetails = (props: Props) => {
                 />
             ),
         });
-    }, [props.navigation]);
+    }, [props.navigation, user]);
 
     const updateProfile = async () => {
-        console.log('token', props.token)
-        console.log('title', state.title)
+        
+        console.log('user imageUri', user.profilePhotoUrl)
 
         await axios({
             method: 'PUT',
@@ -157,19 +150,22 @@ const ProfileDetails = (props: Props) => {
                 authorization: props.token
             },
             data: {
-                description: state.description,
-                phone: state.phone,
-                email: state.email,
-                title: state.title
+                description: user.description,
+                phone: user.phone,
+                email: user.email,
+                title: user.title,
+                profilePhotoUrl: user.profilePhotoUrl
             }
         })
             .then(response => {
                 console.log(response.data)
                 if (response.data === 'Success') {
-                    props.setUserDescription(state.description);
-                    props.setUserEmail(state.email);
-                    props.setUserPhone(state.phone);
-                    props.setUserTitle(state.title);
+                    props.setUserProfileUrl(user.profilePhotoUrl)
+                    props.setUserDescription(user.description);
+                    props.setUserEmail(user.email);
+                    props.setUserPhone(user.phone);
+                    props.setUserTitle(user.title);
+                    alert('Your profile updated!')
                 }
             })
             .catch(error => console.error(error));
@@ -180,19 +176,19 @@ const ProfileDetails = (props: Props) => {
         <View style={styles.container}>
             <ScrollView style={{ paddingVertical: 20 }}>
                 <View style={{ alignItems: "center", }}>
-                    <Image source={{ uri:  BASE_URL + '/i/' + state.imageUri }} style={{ width: 128, height: 128, borderRadius: 90 }} />
+                    <Image source={{ uri:  BASE_URL + '/i/' + user.profilePhotoUrl }} style={{ width: 128, height: 128, borderRadius: 90 }} />
                     <Button title="Change photo" onPress={onChangeProfilePhotoButtonPress} />
                 </View>
                 <Text style={{ fontWeight: "600", fontSize: 17 }}>Username</Text>
                 <InputField value={props.user.username} editable={false} onChangeText={() => { }} />
                 <Text style={{ fontWeight: "600", fontSize: 17 }}>Email</Text>
-                <InputField value={state.email} onChangeText={text => onChangeEmail(text)} />
+                <InputField value={user.email} onChangeText={text => onChangeEmail(text)} />
                 <Text style={{ fontWeight: "600", fontSize: 17 }}>Phone</Text>
-                <InputField value={state.phone} onChangeText={text => onChangePhone(text)} />
+                <InputField value={user.phone} onChangeText={text => onChangePhone(text)} />
                 <Text style={{ fontWeight: "600", fontSize: 17 }}>Title</Text>
-                <InputField value={state.title} onChangeText={text => onChangeTitle(text)} />
+                <InputField value={user.title} onChangeText={text => onChangeTitle(text)} />
                 <Text style={{ fontWeight: "600", fontSize: 17 }}>Description</Text>
-                <InputField value={state.description} onChangeText={text => onChangeDescription(text)} />
+                <InputField value={user.description} onChangeText={text => onChangeDescription(text)} />
             </ScrollView>
         </View>
     )
@@ -206,6 +202,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
+        setUserProfileUrl: (val) => dispatch(setUserProfileUrl(val)),
         setUserDescription: (val) => dispatch(setUserDescription(val)),
         setUserEmail: (val) => dispatch(setUserEmail(val)),
         setUserPhone: (val) => dispatch(setUserPhone(val)),

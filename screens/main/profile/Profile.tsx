@@ -199,7 +199,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(Profile)
 const styles = StyleSheet.create({
     header: {
         flex: 1,
-
         justifyContent: "center",
         flexDirection: "row",
         alignItems: "center",
@@ -210,7 +209,6 @@ const styles = StyleSheet.create({
 
     info: {
         flex: 4,
-
         borderBottomColor: "#A8B0BA",
         borderBottomWidth: 1,
         paddingVertical: 20,

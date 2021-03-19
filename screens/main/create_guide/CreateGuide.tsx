@@ -12,27 +12,32 @@ import { setGuide, setGuideId } from '../../../actions/guideActions'
 import { AsyncStorage } from 'react-native';
 import { BASE_URL } from '../../../api/baseURL';
 import Guide from '../../../interfaces/Guide';
+import { createGuide, updateGuide } from '../../../api/guide/guideRequests';
+import { uploadImage } from '../../../api/images/imageRequests';
 
 interface Props {
     guide: Guide,
+    navigation: any,
     setGuide: (guide: Guide) => void
 }
 
 const CreateGuide = (props: Props) => {
 
-    const [image, setImage] = useState(null);
     const [date, setDate] = useState(new Date(1598051730000));
     const [show, setShow] = useState(false);
-    const [token, setToken] = useState('');
-    useEffect(() => {
+    
+    const [guide, setGuide] = useState<Guide>({
+        title: '',
+        description: '',
+        travelDate: '',
+        thumbnailUrl: '',
+        id: {id: ''},
+        location: ''
+    })
 
+    useEffect(() => {
         getAccessToDeviceLibrary();
-        getTokenFromStorage()
-            .then(token => {
-                getServerGuideId(token);
-                setToken(token)
-            })
-    }, []);
+    },[]);
 
     const getAccessToDeviceLibrary = async () => {
         if (Platform.OS !== 'web') {
@@ -61,84 +66,57 @@ const CreateGuide = (props: Props) => {
         }
     }
 
-    const getServerGuideId = async (token: string) => {
-        await axios({
-            method: 'POST',
-            url: BASE_URL + '/guides',
-            headers: {
-                authorization: token
-            },
-            data: {}
-        }).then(response => {
-            props.setGuide({
-                ...props.guide,
-                id: { id: response.data.id }
-            });
-        })
-    }
-
     const onChangeTitle = (text: string) => {
-        props.setGuide({
-            ...props.guide,
+        setGuide(prevState => ({
+            ...prevState,
             title: text
-        })
+        }));
     }
 
     const onChangeDescription = (text: string) => {
-        props.setGuide({
-            ...props.guide,
+        setGuide(prevState => ({
+            ...prevState,
             description: text
-        })
+        }))
+        console.log(guide.description);
     }
 
     const onChangeDate = (event: any, selectedDate: any) => {
         const currentDate = selectedDate || date;
         setShow(Platform.OS === 'ios');
         setDate(currentDate);
-        props.setGuide({
-            ...props.guide,
+
+        setGuide(prevState => ({
+            ...prevState,
             travelDate: currentDate.toString()
-        })
+        }))
+       
     };
 
     const onChangeLocation = (text: string) => {
-        props.setGuide({
-            ...props.guide,
+        setGuide(prevState => ({
+            ...prevState,
             location: text
-        })
-    }
-
-    const uploadImage = async (uri: string) => {
-        const formData = new FormData()
-        formData.append('file', {
-            // @ts-ignore
-            uri: Platform.OS === "android" ? uri : uri.replace('file://', ''),
-            type: 'image/jpg',
-            name: 'imagename.jpg'
-        })
-        axios({
-            method: 'POST',
-            url: BASE_URL + '/i/upload',
-            headers: {
-                authorization: token,
-                'Content-type': 'multipart/form-data'
-            },
-            data: formData
-        }).then(response => {
-            props.setGuide({
-                ...props.guide,
-                thumbnailUrl: response.data.id
-            })
-        })
+        }))
     }
 
     const onImagePickerButtonPress = () => {
         pickImage()
-            .then(uri => {
-                uploadImage(uri);
-                setImage(uri);
+        .then(uri => {
+            getTokenFromStorage()
+            .then(token => {
+                uploadImage(token, uri)
+                .then(response => {
+                    // console.log('imageId', imageId)
+                    setGuide(prevState => ({
+                        ...prevState,
+                        thumbnailUrl: response.id
+                    }))
+                    
+                })
             })
-
+            //uploadImage(uri);
+        })
     }
 
     const pickImage = async () => {
@@ -151,23 +129,46 @@ const CreateGuide = (props: Props) => {
         return result.uri;
     };
 
+    React.useLayoutEffect(() => {
+        props.navigation.setOptions({
+            headerRight: () => (
+                <Button
+                    onPress={()=>{
+                        getTokenFromStorage()
+                        .then(token => {
+                            createGuide(token)
+                            .then(guideId => {
+                                if (guideId) {
+                                    updateGuide(token, guideId, guide);
+                                } else {
+                                    alert('something goes wrong!');
+                                }
+                            })
+                        })
+                    }}
+                    title="Create"
+                />
+            ),
+        });
+    }, [props.navigation, guide]);
+
     return (
         <View style={styles.container}>
-            <ScrollView keyboardDismissMode='interactive'>
+            {/* <ScrollView keyboardDismissMode='interactive'> */}
                 <View style={styles.imageContainer}>
                     {
-                        image
+                        guide.thumbnailUrl 
                             ?
-                            <Image source={{ uri: image }} style={{ width: 415, height: 256}} />
+                            <Image source={{ uri: BASE_URL + '/i/' + guide.thumbnailUrl }} style={{ width: 415, height: 256}} />
                             :
                             <AddImageButtonLarge onPress={onImagePickerButtonPress} />
                     }
                 </View>
                 <View style={styles.body}>
                     <Text style={{ fontWeight: "600" }}>Name your guide</Text>
-                    <InputField placeholder="Guide name" value={props.guide.title} onChangeText={onChangeTitle} />
+                    <InputField placeholder="Guide name" value={guide.title} onChangeText={onChangeTitle} />
                     <Text style={{ fontWeight: "600" }}>Describe your experience</Text>
-                    <InputField placeholder="Guide name" value={props.guide.description} onChangeText={onChangeDescription} numberOfLines={5} multiline={true} />
+                    <InputField placeholder="Guide name" value={guide.description} onChangeText={onChangeDescription} numberOfLines={5} multiline={true} />
                     <Text style={{ fontWeight: "600" }}>When it was?</Text>
                     <View style={{ paddingVertical: 10 }}>
                         <DateTimePicker
@@ -180,12 +181,12 @@ const CreateGuide = (props: Props) => {
                         />
                     </View>
                     <Text style={{ fontWeight: "600" }}>Where it was?</Text>
-                    <InputField placeholder="It was in..." value={props.guide.location} onChangeText={onChangeLocation} />
+                    <InputField placeholder="It was in..." value={guide.location} onChangeText={onChangeLocation} />
                     <Text style={{ fontWeight: "600" }}>Add some cards</Text>
                     <Button title='Add card' onPress={() => { props.navigation.navigate('NewCard') }}></Button>
                 </View>
 
-            </ScrollView>
+            {/* </ScrollView> */}
 
         </View>
     )

@@ -1,9 +1,9 @@
-interface contentItem {
+export interface ContentItem {
     type: string,
     value: string
 }
-export default interface Card{
-    content: contentItem[],
+export interface Card{
+    content: ContentItem[],
     guideId: {id: string},
     location: string,
     tags: string[],
