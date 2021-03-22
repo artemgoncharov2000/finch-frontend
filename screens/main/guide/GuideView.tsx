@@ -6,59 +6,50 @@ import BackButton from '../../../components/buttons/BackButton'
 import Guide from '../../../interfaces/Guide';
 import { BASE_URL } from '../../../api/baseURL';
 import { getCardsByGuideId } from '../../../api/card/cardRequests';
-import { AsyncStorage } from 'react-native';
 import Card from '../../../interfaces/Card';
+import { getGuideById } from '../../../api/guide/guideRequests';
+import { connect } from 'react-redux';
+
 const GuideView = (props) => {
-
-    // const [cards, setCards] = useState([
-    //     { title: 'Rome' },
-    //     { title: 'Florence' },
-    //     { title: 'Venice' },
-    //     { title: 'Piza' },
-    // ]);
-
-    const getTokenFromStorage = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token');
-            return token;
-
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
     const [guide, setGuide] = useState<Guide>()
     const [cards, setCards] = useState<Card[]>()
 
     useEffect(() => {
         console.log(props)
-        const data: Guide = props.props.route.params.guide;
-        setGuide({
-            title: data.title,
-            id: data.id,
-            description: data.description,
-            location: data.location,
-            thumbnailUrl: data.thumbnailUrl,
-            travelDate: data.travelDate
-        })
-        getTokenFromStorage()
-        .then(token => {
-            getCardsByGuideId(token, data.id)
+        const guideId = props.props.route.params.guideId;
+
+        getGuideById(props.userToken, guideId)
+            .then(data => {
+                console.log(data)
+                setGuide({
+                    title: data.title,
+                    id: data.id,
+                    description: data.description,
+                    location: data.location,
+                    thumbnailUrl: data.thumbnailUrl,
+                    travelDate: data.travelDate,
+                    created: data.created
+                })
+            })
+
+
+        getCardsByGuideId(props.userToken, guideId)
             .then(cards => {
                 console.log('card' + cards)
                 setCards(cards)
             })
-        })
+
     }, []);
 
     return (
         <View style={styles.container}>
-           
+
             <View style={styles.imageContainer}>
                 <View style={styles.backButton}>
                     <BackButton navigation={props.props.navigation} />
                 </View>
-                <Image style={{ height: 256, width: 415 }} source={{uri: BASE_URL + '/i/' + guide?.thumbnailUrl}} />
+                <Image style={{ height: 256, width: 415 }} source={{ uri: BASE_URL + '/i/' + guide?.thumbnailUrl }} />
             </View>
             <View style={styles.infoContainer}>
                 <Text style={styles.title}>{guide?.title}</Text>
@@ -71,26 +62,30 @@ const GuideView = (props) => {
                 <Text>{guide?.description}</Text>
             </View>
             <View style={styles.cardsContainer}>
-                <FlatList 
+                <FlatList
                     data={cards}
-                    renderItem={({item, index}) => {
+                    renderItem={({ item, index }) => {
                         return <CardPreview title={cards[index].title} uri={cards[index].thumbnailUrl} />
                     }}
                 />
             </View>
-            
+
             {/* <View style={styles.cardsContainer}>
                 {
                     cards.map((item, ind) => ())
                 }
             </View> */}
-           
-            
+
+
         </View>
     );
 }
-
-export default GuideView;
+const mapStateToProps = (state) => {
+    return {
+        userToken: state.tokenReducer.userToken
+    }
+}
+export default connect(mapStateToProps)(GuideView);
 
 const styles = StyleSheet.create({
     container: {

@@ -4,7 +4,7 @@ import CreateGuide from '../screens/main/create_guide/CreateGuide';
 import CreateCard from '../screens/main/create_card/CreateCard';
 
 
-const CreateStackScreen = (props) => {
+const CreateStackNavigator = (props) => {
   const CreateStack = createStackNavigator();
   
   return (
@@ -31,4 +31,4 @@ const CreateStackScreen = (props) => {
   );
 };
 
-export default (CreateStackScreen)
+export default (CreateStackNavigator)

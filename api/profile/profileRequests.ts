@@ -9,7 +9,20 @@ export async function getProfileData(token: string){
             authorization: token
         }
     })
-    .then(response => response)
+    .then(response => response.data)
+    .catch(error => console.error(error));
+    return request;
+}
+
+export async function getUserByUsername(token: string, username: string) {
+    const request = await axios({
+        method: 'GET',
+        url: BASE_URL + "/users/preview/" + username,
+        headers: {
+            authorization: token
+        }
+    })
+    .then(response => response.data)
     .catch(error => console.error(error));
     return request;
 }

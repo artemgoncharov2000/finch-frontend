@@ -1,21 +1,30 @@
 import React, { FC, useState } from 'react';
 import { Button } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
-import ProfileDetails from '../screens/main/profile/ProfileDetails';
+import EditProfileScreen from '../screens/main/profile/EditProfileScreen';
 import UsersList from '../screens/main/profile/UsersList'
+import ProfileOptionsScreen from '../screens/main/profile/ProfileOptionsScreen';
 
 
-const ProfileStackScreen = ({ route, navigation }) => {
+const ProfileStackNavigator = ({ route, navigation }) => {
   const CreateStack = createStackNavigator();
   const { destination } = route.params;
   return (
     <CreateStack.Navigator initialRouteName={destination}>
       <CreateStack.Screen
         name="ProfileDetails"
-        component={ProfileDetails}
+        component={EditProfileScreen}
         options={({ navigation, route }) => ({
           headerBackTitle: "Back",
           headerTitle: "Details"
+        })}
+      />
+      <CreateStack.Screen 
+        name="ProfileOptions"
+        component={ProfileOptionsScreen}
+        options={({ navigation, route }) => ({
+          headerBackTitle: "Back",
+          headerTitle: "Options"
         })}
       />
       <CreateStack.Screen
@@ -41,4 +50,4 @@ const ProfileStackScreen = ({ route, navigation }) => {
 
   );
 };
-export default ProfileStackScreen
+export default ProfileStackNavigator

@@ -4,5 +4,6 @@ export default interface Guide {
     location: string,
     thumbnailUrl: string,
     title: string,
-    travelDate: string
+    travelDate: string,
+    created: string
 }

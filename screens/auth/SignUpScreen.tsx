@@ -1,14 +1,17 @@
 import React, { FC, useState } from 'react'
 import {StyleSheet, Text, View, Button } from 'react-native';
-import DefaultButton from '../../../components/buttons/DefaultButton'
-import InputField from '../../../components/input_fields/InputField';
+import DefaultButton from '../../components/buttons/DefaultButton'
+import InputField from '../../components/input_fields/InputField';
 //@ts-ignore 
-import FinchIcon from '../../../assets/finch-logo.svg' 
+import FinchIcon from './../../assets/finch-logo.svg'
 import axios from 'axios';
 import { MMKV } from 'react-native-mmkv';
-import { BASE_URL } from '../../../api/baseURL';
+import { BASE_URL } from '../../api/baseURL';
 import { ScrollView } from 'react-native-gesture-handler';
-import {registerUser} from '../../../api/auth/authentification'
+import {SignInUser, SignUpUser} from '../../api/auth/authentification'
+import { signIn } from '../../redux/actions/tokenActions';
+import { connect } from 'react-redux';
+import LocalStorage from '../../local_storage/LocalStorage';
 interface Props {
     navigation: any
 }
@@ -19,7 +22,7 @@ interface User {
     username: string
 }
 
-const Signup: FC<Props> = (props) => {
+const SignUpScreen: FC<Props> = (props) => {
 
     const [user, setUser] = useState<User>({
         email: '',
@@ -47,6 +50,26 @@ const Signup: FC<Props> = (props) => {
             password: password
         })
     }
+
+    const onSignUpButtonPress = () => {
+        SignUpUser(user)
+        .then(result => {
+            console.log('result ', result)
+            if (result === 'Success') {
+                console.log(result)
+                SignInUser(user)
+                .then(userToken => {
+                    LocalStorage.save('userToken', userToken);
+                    props.signIn(userToken);
+                })
+
+            } else if (result) {
+                alert('Something goes wrong!');
+            }
+        })
+    }
+
+
     return(
         <View style={styles.container}>
             
@@ -62,29 +85,23 @@ const Signup: FC<Props> = (props) => {
             </View>
             <View style={styles.buttonView}>
                 <DefaultButton 
-                    title="Create account" 
-                    onPress={()=>{
-                        registerUser(user)
-                        .then(result => {
-                            console.log('result ', result)
-                            if (result === 'Success') {
-                                props.navigation.navigate('Login');
-                            } else if (result) {
-                                alert('Something goes wrong!');
-                            }
-                        })
-                    }}
+                    title="Sign Up" 
+                    onPress={onSignUpButtonPress}
                 />
                 <View style={styles.loginContainer}>
                     <Text style={styles.loginText}>Have an account?</Text>
-                    <Button title="Sign in" onPress={()=>{props.navigation.navigate('Login')}} />
+                    <Button title="Sign in" onPress={()=>{props.navigation.navigate('SignIn')}} />
                 </View>
             </View>
         </View>
     );
 }
-
-export default Signup;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        signIn: (token: string) => dispatch(signIn(token))
+    }
+}
+export default connect(mapDispatchToProps)(SignUpScreen);
 
 const styles = StyleSheet.create({
     container: {

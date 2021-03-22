@@ -6,7 +6,7 @@ interface User{
     password: string,
     username: string
 }
-export async function registerUser(user: User){
+export async function SignUpUser(user: User){
     const request = await axios({
         method: 'POST',
         url: BASE_URL + "/auth/register",
@@ -28,7 +28,7 @@ export async function registerUser(user: User){
     return request;
 }
 
-export async function loginUser(user: User){
+export async function SignInUser(user: User){
     
     const request = await axios({
         method: 'POST',

@@ -21,5 +21,6 @@ export const SET_CARD = 'SET_CARD';
 export const GET_CARD = 'GET_CARD';
 
 //Token
-export const SET_TOKEN = 'SET_TOKEN';
-export const GET_TOKEN = 'GET_TOKEN';
+export const RESTORE_TOKEN = 'RESTORE_TOKEN';
+export const SIGN_IN = 'SIGN_IN';
+export const SIGN_OUT = 'SIGN_OUT';

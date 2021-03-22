@@ -1,4 +1,4 @@
-import Card from '../interfaces/Card'
+import Card from '../../interfaces/Card'
 import {GET_CARD, SET_CARD} from './actionTypes'
 
 export const setCard = (card: Card) => (

@@ -8,12 +8,13 @@ import AddImageButtonLarge from '../../../components/buttons/AddImageButtonLarge
 import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { setGuide, setGuideId } from '../../../actions/guideActions'
-import { AsyncStorage } from 'react-native';
+import { setGuide, setGuideId } from '../../../redux/actions/guideActions'
+// import { AsyncStorage } from 'react-native';
 import { BASE_URL } from '../../../api/baseURL';
 import Guide from '../../../interfaces/Guide';
 import { createGuide, updateGuide } from '../../../api/guide/guideRequests';
 import { uploadImage } from '../../../api/images/imageRequests';
+import LocalStorage from '../../../local_storage/LocalStorage';
 
 interface Props {
     guide: Guide,
@@ -57,14 +58,14 @@ const CreateGuide = (props: Props) => {
         }
     }
 
-    const getTokenFromStorage = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token');
-            return token;
-        } catch (error) {
-            console.error(error)
-        }
-    }
+    // const getTokenFromStorage = async () => {
+    //     try {
+    //         const token = await AsyncStorage.getItem('token');
+    //         return token;
+    //     } catch (error) {
+    //         console.error(error)
+    //     }
+    // }
 
     const onChangeTitle = (text: string) => {
         setGuide(prevState => ({
@@ -103,7 +104,7 @@ const CreateGuide = (props: Props) => {
     const onImagePickerButtonPress = () => {
         pickImage()
         .then(uri => {
-            getTokenFromStorage()
+            LocalStorage.getData('token')
             .then(token => {
                 uploadImage(token, uri)
                 .then(response => {
@@ -134,16 +135,19 @@ const CreateGuide = (props: Props) => {
             headerRight: () => (
                 <Button
                     onPress={()=>{
-                        getTokenFromStorage()
+                        LocalStorage.getData('token')
                         .then(token => {
-                            createGuide(token)
-                            .then(guideId => {
-                                if (guideId) {
-                                    updateGuide(token, guideId, guide);
-                                } else {
-                                    alert('something goes wrong!');
-                                }
-                            })
+                            if (token)
+                                createGuide(token, guide)
+                                .catch(error => console.log(error))
+                                // .then(guideId => {
+                                //     if (guideId) {
+                                //         updateGuide(token, guideId, guide);
+                                //     } else {
+                                //         alert('something goes wrong!');
+                                //     }
+                                // })
+                            else console.log('no token')    
                         })
                     }}
                     title="Create"

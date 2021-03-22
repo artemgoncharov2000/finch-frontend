@@ -1,5 +1,5 @@
 import { SET_GUIDE_ID, SET_GUIDE} from '../actions/actionTypes'
-import Guide from '../interfaces/Guide';
+import Guide from '../../interfaces/Guide';
 
 interface Action{
     type: string,

@@ -1,7 +1,7 @@
 import {SET_USER, SET_USER_DESCRIPTION, SET_USER_EMAIL, SET_USER_PHONE
 , SET_USER_PROFILE_ACCESS, SET_USER_PROFILE_URL, SET_USER_SUBSCRIBERS_COUNT,
 SET_USER_SUBSCRIPTIONS_COUNT, SET_USER_TITLE, SET_USER_TYPE} from './actionTypes';
-import User from '../interfaces/User'
+import User from '../../interfaces/User'
 
 export const setUser = (user: User) => (
     {

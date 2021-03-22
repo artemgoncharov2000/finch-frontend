@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import GuideView from '../screens/main/guide/GuideView';
 
-const GuideStackScreen = (props) => {
+const GuideStackNavigator = (props) => {
     const GuideStack = createStackNavigator();
     useEffect(()=>console.log(props),[])
     return (
@@ -20,4 +20,4 @@ const GuideStackScreen = (props) => {
     );
 };
 
-export default GuideStackScreen;
+export default GuideStackNavigator;

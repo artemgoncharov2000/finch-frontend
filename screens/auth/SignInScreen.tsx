@@ -1,23 +1,25 @@
 import React, { FC, useState } from 'react'
 import {StyleSheet, Text, View, Button} from 'react-native';
-import DefaultButton from '../../../components/buttons/DefaultButton'
-import InputField from '../../../components/input_fields/InputField';
-import Signup from '../signup/Signup'
+import DefaultButton from '../../components/buttons/DefaultButton'
+import InputField from '../../components/input_fields/InputField';
+import SignUpScreen from './SignUpScreen'
 //@ts-ignore 
-import FinchIcon from '../../../assets/finch-logo.svg' 
+import FinchIcon from '../../assets/finch-logo.svg'
 import axios from 'axios';
-import { AsyncStorage } from 'react-native';
-import { BASE_URL } from '../../../api/baseURL';
-import { getToken, setToken } from '../../../actions/tokenActions';
+//import { AsyncStorage } from 'react-native';
+import { BASE_URL } from '../../api/baseURL';
+//import { getToken, setToken } from '../../actions/tokenActions';
 import { connect } from 'react-redux';
-import {loginUser} from '../../../api/auth/authentification';
+import {SignInUser} from '../../api/auth/authentification';
+import LocalStorage from '../../local_storage/LocalStorage'
+import { signIn } from '../../redux/actions/tokenActions';
 
 interface User {
     username: string,
     password: string,
 }
 
-const Login = (props) => {
+const SignInScreen = (props) => {
 
     const [user, setUser] = useState<User>({
         username: '',
@@ -38,14 +40,14 @@ const Login = (props) => {
         })
     }
 
-    const setTokenToStorage = async (token: string) => {
-        try {
-            await AsyncStorage.setItem('token', token)
-        } catch (err) {
-            console.log(err)
-        }
+    // const setTokenToStorage = async (token: string) => {
+    //     try {
+    //         await AsyncStorage.setItem('token', token)
+    //     } catch (err) {
+    //         console.log(err)
+    //     }
         
-    }
+    // }
 
     return(
         <View style={styles.container}>
@@ -62,16 +64,19 @@ const Login = (props) => {
                 <DefaultButton 
                     title="Sign in" 
                     onPress={()=> {
-                        loginUser(user)
-                        .then(token => {
-                            setTokenToStorage(token);
-                            props.navigation.navigate('MainStackScreen');
+                        SignInUser(user)
+                        .then(userToken => {
+                            LocalStorage.save('userToken', userToken)
+                            props.signIn(userToken)
+                           // LocalStorage.storeData('token', token);
+                          //  setTokenToStorage(token);
+                           // props.navigation.navigate('MainStackScreen');
                         })
                     }}
                 />
                 <View style={styles.signupContainer}>
                     <Text style={styles.signupText}>No account?</Text>
-                    <Button title="Sign Up" onPress={()=>{props.navigation.navigate('Signup')}} />
+                    <Button title="Sign Up" onPress={()=>{props.navigation.navigate('SignUp')}} />
                 </View>
             </View>
         </View>
@@ -80,17 +85,17 @@ const Login = (props) => {
 
 const mapStateToProps = (state) => {
     return {
-        token: state.tokenReducer.token
+        state: state.tokenReducer
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setToken: (value) => dispatch(setToken(value)),
-        getToken: () => dispatch(getToken())
+        signIn: (value) => dispatch(signIn(value)),
+        
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(SignInScreen);
 
 const styles = StyleSheet.create({
     container: {

@@ -4,7 +4,7 @@ import InputField from '../../../components/input_fields/InputField';
 import * as ImagePicker from 'expo-image-picker'
 import AddContentButton from '../../../components/buttons/AddContentButton';
 import AddImageButtonMiddle from '../../../components/buttons/AddImageButtonMiddle';
-import { setCard, getCard } from '../../../actions/cardActions';
+import { setCard, getCard } from '../../../redux/actions/cardActions';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { AsyncStorage } from 'react-native';
@@ -87,7 +87,7 @@ const CreateCard = (props) => {
     const onAddImageButtonPress = () => {
         pickImage()
         .then(uri => {
-            uploadImage(uri, 'content');
+            uploadImage(uri, 'content')
             setImage(uri)
         })
 
@@ -152,11 +152,8 @@ const CreateCard = (props) => {
         });
 
         if (!result.cancelled) {
-            try {
-                uploadImage(result.uri, 'preview')
-            } catch(err) {
-                console.error(err)
-            }
+            
+            uploadImage(result.uri, 'preview')
             setPreviewImageUri(result.uri);
         }
     }
@@ -187,9 +184,9 @@ const CreateCard = (props) => {
                 <InputField placeholder="ex. The Eiffel Tower" value={props.card.location}  fontWeight="400" fontSize={14} onChangeText={onChangeLocation} />
                 <Text style={{ fontWeight: "600" }}>Add a picture to your card</Text>
                 {
-                    previewImageUri
+                    card.thumbnailUrl
                         ?
-                        <Image source={{ uri: previewImageUri }} style={{ width: 374, height: 90, borderRadius: 10 }} />
+                        <Image source={{ uri: BASE_URL + '/i/' + card.thumbnailUrl }} style={{ width: 374, height: 90, borderRadius: 10 }} />
                         :
                         <AddImageButtonMiddle onPress={pickPreviewImage} />
                 }

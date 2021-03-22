@@ -7,105 +7,59 @@ import axios from 'axios';
 import { AsyncStorage } from 'react-native';
 import { BASE_URL } from '../../../api/baseURL';
 import Guide from '../../../interfaces/Guide';
+import LocalStorage from '../../../local_storage/LocalStorage';
+import { connect } from 'react-redux';
+import { getFeed } from '../../../api/feed/feedRequests';
 
 const Feed = (props) => {
     const insets = useSafeAreaInsets();
-   // const [guideIdsList, setGuideIdsList] = useState('');
-   // const [token, setToken] = useState('');
-    const [guides, setGuides] = useState<Guide[]>([])
+    const [guidesIds, setGuidesIds] = useState<string[]>([])
+
     useEffect(() => {
-        getTokenFromStorage()
-        .then((token) => {
-            getGuideListFromServer(token);
-           // setToken(token);
-        })
-    },[])
+        // setGuides([]);
 
-    const getTokenFromStorage = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token');
-            return token;
-
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const getGuideListFromServer = async (token: string | null | undefined) => {
-        await axios({
-            method: 'GET',
-            url: BASE_URL + '/feed',
-            headers: {
-                authorization: token
-            }
-        })
-        .then(response => {
-            const guideIds: [string] = response.data;
-            guideIds.map((item, index) => {
-                getGuideFromServer(token, item)
-                .then(guide => {
-                    console.log(guide)
-                    setGuides(prevState => prevState.concat([guide]));
-                })
-                
-            })
-            console.log(guides)
-        })
-    }
-
-    const getGuideFromServer = async (token: string | null | undefined, guideId: string) => {
-        console.log('token ', token);
-        
-        const request = await axios({
-            method: 'GET',
-            url: BASE_URL + '/guides/' + guideId,
-            headers: {
-                authorization: token
-            }
-        })
-        .then(response => {
-            console.log(response.data)
-            return response.data;
-        })
-
-        return request;
-    }
+        // getGuideListFromServer(props.userToken);
+        getFeed(props.userToken)
+        .then(ids => setGuidesIds(ids));
+    }, [])
 
     return (
         <View style={{
             paddingTop: insets.top,
             flex: 1,
             justifyContent: "center",
-            
+            backgroundColor: "#fff"
         }}>
-            <View style={{
-                flex: 1,
-                justifyContent: 'center',
-                paddingHorizontal: 20
-            }}
+            <View style={styles.header}
             >
                 <SearchField />
             </View>
             <View style={{
                 flex: 14,
-
-
             }}
             >
                 <FlatList
-                    data={guides}
-                    renderItem={({item, index}) => {
-                        return <GuidePreview title={guides[index].title} subTitle={guides[index].description} imageId={guides[index].thumbnailUrl} onPress={() => props.navigation.navigate('GuideStackScreen', {guide: guides[index]})}/>
+                    data={guidesIds}
+                    renderItem={({ item, index }) => {
+                        return <GuidePreview guideId={guidesIds[index]}  onPress={() => props.navigation.navigate('GuideStackScreen', { guideId: guidesIds[index] })} />
                     }}
                 />
             </View>
         </View>
     )
 }
+const mapStateToProps = (state) => {
+    return {
+        userToken: state.tokenReducer.userToken
+    }
+}
+export default connect(mapStateToProps)(Feed);
 
-export default Feed
 const styles = StyleSheet.create({
-    container: {
-
+    header: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20
     }
 })

@@ -16,14 +16,34 @@ export async function getGuidesByUser(token: string, username: string) {
     return request;
 }
 
-export async function createGuide(token: string) {
+export async function getGuideById(token: string, id: string) {
+    const request = await axios({
+        method: 'GET',
+        url: BASE_URL + '/guides/' + id,
+        headers: {
+            authorization: token
+        }
+    })
+    .then(response => response.data)
+    .catch(error => console.error(error));
+
+    return request;
+}
+
+export async function createGuide(token: string, guide: Guide) {
     const request = await axios({
         method: 'POST',
         url: BASE_URL + '/guides',
         headers: {
             authorization: token
         },
-        data: {}
+        data: {
+            description: guide.description,
+            location: guide.location,
+            thumbnailUrl: guide.thumbnailUrl,
+            title: guide.title,
+            travelData: guide.travelDate
+        }
     })
     .then(response => response.data)
     .catch(error => console.error(error));

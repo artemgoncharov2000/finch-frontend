@@ -3,54 +3,38 @@ import React, { FC, useEffect, useState } from 'react'
 import { StyleSheet, Text, View, Image, FlatList } from 'react-native';
 import ChangeProfileButton from '../../../components/buttons/ChangeProfileButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AsyncStorage } from 'react-native';
-import axios from 'axios';
 import { BASE_URL } from '../../../api/baseURL';
 import { connect } from 'react-redux';
-import { setUser } from '../../../actions/userActions';
-import { setToken } from '../../../actions/tokenActions';
+import { setUser } from '../../../redux/actions/userActions';
 import User from '../../../interfaces/User';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import GuidePreview from '../../../components/guide/GuidePreview';
 import { getProfileData } from '../../../api/profile/profileRequests';
 //@ts-ignore
-import ProfileDetailIcon from '../../../assets/icons/profile-details-icon.svg';
+import ProfileDetailIcon from '../../../assets/profile/profile-details-icon.svg';
+//@ts-ignore
+import EmptyIcon from '../../../assets/profile/empty-icon.svg'
+
 import NewGuideButton from '../../../components/buttons/NewGuideButton'
 import { getGuidesByUser } from '../../../api/guide/guideRequests';
 import Guide from '../../../interfaces/Guide';
 interface Props {
     navigation: any,
     user: User,
-    token: string,
-    setToken: (token: any) => void,
+    userToken: string,
     setUser: (user: User) => void
 }
 
-const Profile = (props: Props) => {
+const ProfileScreen = (props: Props) => {
     const insets = useSafeAreaInsets();
     const [guides, setGuides] = useState<Guide[]>([]);
-    const getTokenFromStorage = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token');
-            return token;
-
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
     useEffect(() => {
-        getTokenFromStorage()
-            .then(token => {
-                getGuidesByUser(token, 'me')
-                    .then(list => setGuides(list));
-                getProfileData(token)
-                    .then(response => {
-                        const data = response.data;
-                        props.setUser(data);
-                    })
-
-                props.setToken(token)
+        getGuidesByUser(props.userToken, 'me')
+            .then(list => setGuides(list));
+        getProfileData(props.userToken)
+            .then(data => {
+                props.setUser(data);
             })
     }, [])
 
@@ -61,42 +45,29 @@ const Profile = (props: Props) => {
         }}
         >
             <View style={styles.header}>
-
-                <Text
-                    style={{ fontWeight: "600", fontSize: 17 }}
-                >
-                    {props.user.username}
-                </Text>
-
+                <View style={styles.headerLeftItem}>
+                    
+                </View>
+                <View style={styles.headerTitle}>
+                <Text style={styles.headerTitle}>{props.user.username}</Text>
+                </View>
+                
+                <View style={styles.headerRightItem}>
+                    <TouchableOpacity onPress={() => props.navigation.navigate('ProfileStackScreen', { destination: 'ProfileOptions' })} >
+                        <ProfileDetailIcon width={26} height={26} fill="#000" />
+                    </TouchableOpacity>
+                </View>
             </View>
-
-            <View style={styles.info}>
-                <View
-                    style={{
-                        flex: 1,
-                        paddingVertical: 10,
-                        flexDirection: "row",
-                        alignItems: "center",
-
-                    }}
-                >
+            <View style={styles.profileInfo}>
+                <View style={styles.profileInfoHeader}>
                     <View
                         style={{
                             flex: 1,
                             justifyContent: "center",
                             alignItems: "center",
-
                         }}
                     >
-                        <Image
-                            source={{ uri: BASE_URL + "/i/" + props.user.profilePhotoUrl }}
-                            style={{
-                                width: 64,
-                                height: 64,
-                                borderRadius: 90
-                            }}
-                        />
-
+                        <Image style={styles.profilePhoto} source={{ uri: BASE_URL + "/i/" + props.user.profilePhotoUrl }} />
                     </View>
                     <View
                         style={{
@@ -107,7 +78,6 @@ const Profile = (props: Props) => {
                     >
                         <Text>{guides.length}</Text>
                         <Text style={{ fontSize: 12 }}>Guides</Text>
-
                     </View>
                     <View
                         style={{
@@ -146,7 +116,6 @@ const Profile = (props: Props) => {
                         <Text
                             style={{
                                 fontWeight: "600",
-
                             }}
                         >
                             {props.user.title}
@@ -161,64 +130,134 @@ const Profile = (props: Props) => {
                     </Text>
 
                 </View>
-                <ChangeProfileButton title="Edit profile" onPress={() => props.navigation.navigate('ProfileStackScreen', { destination: 'Details' })} />
+                <ChangeProfileButton title="Edit profile" onPress={() => props.navigation.navigate('ProfileStackScreen', { destination: 'ProfileDetails' })} />
             </View>
             <View style={styles.body}>
-                <View style={{ zIndex: 30, position: "absolute", right: 20, bottom: 15 }}>
+                <View style={styles.newButtonContainer}>
                     <NewGuideButton onPress={() => { props.navigation.navigate('CreateStackScreen') }} />
                 </View>
-                <FlatList
-                    data={guides}
-                    renderItem={({item, index}) => {
-                        //const guide = getGuideFromServer('dfdf', item)
-                        return <GuidePreview title={guides[index].title} subTitle={guides[index].description} imageId={guides[index].thumbnailUrl} onPress={() => props.navigation.navigate('GuideStackScreen', {guide: guides[index]})} />
-                    }}
-                />
+                {
+                    guides.length == 0
+                        ?
+                        (
+                            <>
+                                <View style={styles.emptyList}>
+                                    <EmptyIcon />
+                                    <Text style={styles.emptyListTitle}>Share your travels</Text>
+                                    <Text style={styles.emptyListSubTitle}>Your travel guides will appear here</Text>
+                                </View>
 
-
-
+                            </>
+                        )
+                        :
+                        (
+                            <>
+                                <FlatList
+                                    data={guides}
+                                    renderItem={({ item, index }) => {
+                                        //const guide = getGuideFromServer('dfdf', item)
+                                        return <GuidePreview title={guides[index].title} subTitle={guides[index].description} imageId={guides[index].thumbnailUrl} onPress={() => props.navigation.navigate('GuideStackScreen', { guide: guides[index] })} />
+                                    }}
+                                />
+                            </>
+                        )
+                }
             </View>
         </View>
     )
 }
 
-const mapStateToProps = (state: { userReducer: { user: User; }; tokenReducer: { token: any; }; }) => {
+const mapStateToProps = (state: { userReducer: { user: any; }; tokenReducer: { userToken: any; }; }) => {
     return {
         user: state.userReducer.user,
-        token: state.tokenReducer.token
+        userToken: state.tokenReducer.userToken
     }
 }
 const mapDispatchToProps = (dispatch: (arg0: { type: string; payload: string | User; }) => any) => {
     return {
         setUser: (user: User) => dispatch(setUser(user)),
-        setToken: (value: string) => dispatch(setToken(value))
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Profile)
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen)
 
 const styles = StyleSheet.create({
+    container: {
+
+    },
     header: {
         flex: 1,
-        justifyContent: "center",
+        // justifyContent: "space-between",
         flexDirection: "row",
         alignItems: "center",
         borderBottomColor: "#A8B0BA",
         borderBottomWidth: 1,
 
     },
-
-    info: {
+    headerLeftItem: {
+        flex: 1,
+        
+        alignItems: 'center',
+        paddingRight: 10
+    },
+    headerCenterItem: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    headerTitle: {
+        
+        fontWeight: "600",
+        fontSize: 17,
+    },
+    headerRightItem: {
+       
+        flex: 1,
+        alignItems: 'flex-end',
+        paddingRight: 10
+    },
+    profileInfo: {
         flex: 4,
         borderBottomColor: "#A8B0BA",
         borderBottomWidth: 1,
         paddingVertical: 20,
         paddingHorizontal: 20
     },
+    profileInfoHeader: {
+        flex: 1,
+        paddingVertical: 10,
+        flexDirection: "row",
+        alignItems: "center",
+    },
+
+    profilePhoto: {
+        width: 64,
+        height: 64,
+        borderRadius: 90
+    },
+
     body: {
-
         flex: 15,
-
-
+        justifyContent: 'center'
+    },
+    emptyList: {
+        alignSelf: 'center',
+        alignItems: 'center'
+    },
+    emptyListTitle: {
+        paddingVertical: 5,
+        fontSize: 20,
+        fontWeight: '600'
+    },
+    emptyListSubTitle: {
+        paddingVertical: 5,
+        color: "#6C7889",
+        fontSize: 16
+    },
+    newButtonContainer: {
+        zIndex: 30,
+        position: "absolute",
+        right: 20,
+        bottom: 15
     },
     touchableOpacity: {
         justifyContent: "center",

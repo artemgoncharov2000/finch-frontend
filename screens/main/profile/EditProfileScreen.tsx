@@ -2,20 +2,18 @@ import React, { FC, useState, useEffect } from 'react'
 import { StyleSheet, Text, View, Image, Modal, Button, Platform } from 'react-native';
 import InputField from '../../../components/input_fields/InputField';
 import * as ImagePicker from 'expo-image-picker'
-import Constants from 'expo-constants'
-import DateTimePicker from '@react-native-community/datetimepicker';
-import AddImageButtonLarge from '../../../components/buttons/AddImageButtonLarge';
 import { ScrollView } from 'react-native-gesture-handler';
-import { setUserDescription, setUserEmail, setUserPhone, setUserTitle, setUserProfileUrl } from '../../../actions/userActions';
+import { setUserDescription, setUserEmail, setUserPhone, setUserTitle, setUserProfileUrl } from '../../../redux/actions/userActions';
 import { connect } from 'react-redux';
-import { AsyncStorage } from 'react-native';
 import axios from 'axios';
 import { BASE_URL } from '../../../api/baseURL';
 import User from '../../../interfaces/User';
 
 
+
 interface Props {
     user: User,
+    userToken: string,
     navigation: any,
     setUserDescription: (value: string) => void,
     setUserEmail: (value: string) => void,
@@ -24,7 +22,7 @@ interface Props {
     setUserProfileUrl: (value: string) => void
 }
 
-const ProfileDetails = (props: Props) => {
+const EditProfileScreen = (props: Props) => {
     console.log(props.user.profilePhotoUrl);
     const [user, setUser] = useState({
         profilePhotoUrl: props.user.profilePhotoUrl,
@@ -34,19 +32,6 @@ const ProfileDetails = (props: Props) => {
         description: props.user.description
     })
     
-    const getTokenFromStorage = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token');
-            
-            return token;
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    
-
-
     const onChangeEmail = (value: string) => {
         setUser(prevState => ({
             ...prevState,
@@ -78,11 +63,12 @@ const ProfileDetails = (props: Props) => {
     const onChangeProfilePhotoButtonPress = () => {
         pickImage()
             .then(uri => {
-                uploadImage(uri);
+                uploadImage(props.userToken, uri)
                 setUser(prevState => ({
                     ...prevState,
                     profilePhotoUrl: uri
                 }))
+
             })
     }
 
@@ -98,7 +84,7 @@ const ProfileDetails = (props: Props) => {
         return result.uri;
     };
 
-    const uploadImage = async (uri: string) => {
+    const uploadImage = async (token: string | null | undefined, uri: string) => {
         const formData = new FormData()
         formData.append('file', {
             //@ts-ignore
@@ -106,13 +92,13 @@ const ProfileDetails = (props: Props) => {
             type: 'image/jpg',
             name: 'imagename.jpg'
         })
-        console.log('token: ', props.token)
+        console.log('token: ', token)
 
         await axios({
             method: 'POST',
             url: BASE_URL + '/i/upload',
             headers: {
-                authorization: props.token,
+                authorization: token,
                 'Content-type': 'multipart/form-data'
             },
             data: formData
@@ -147,7 +133,7 @@ const ProfileDetails = (props: Props) => {
             method: 'PUT',
             url: BASE_URL + '/users/me',
             headers: {
-                authorization: props.token
+                authorization: props.userToken
             },
             data: {
                 description: user.description,
@@ -174,7 +160,7 @@ const ProfileDetails = (props: Props) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView style={{ paddingVertical: 20 }}>
+            <ScrollView style={{ paddingVertical: 20 }} keyboardDismissMode='interactive'>
                 <View style={{ alignItems: "center", }}>
                     <Image source={{ uri:  BASE_URL + '/i/' + user.profilePhotoUrl }} style={{ width: 128, height: 128, borderRadius: 90 }} />
                     <Button title="Change photo" onPress={onChangeProfilePhotoButtonPress} />
@@ -197,7 +183,7 @@ const ProfileDetails = (props: Props) => {
 const mapStateToProps = (state) => {
     return {
         user: state.userReducer.user,
-        token: state.tokenReducer.token
+        userToken: state.tokenReducer.userToken
     }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -210,7 +196,7 @@ const mapDispatchToProps = (dispatch) => {
 
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileDetails)
+export default connect(mapStateToProps, mapDispatchToProps)(EditProfileScreen)
 
 const styles = StyleSheet.create({
     container: {
