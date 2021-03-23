@@ -222,7 +222,8 @@ const CreateCard = (props) => {
 const mapStateToProps = (state) => {
     return {
         card: state.cardReducer.card,
-        guideId: state.guideReducer.guide.id.id
+        guideId: state.guideReducer.guide.id.id,
+        userToken: state.tokenReducer.userToken
     }
 }
 

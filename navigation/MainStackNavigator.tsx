@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import Feed from '../screens/main/feed/Feed';
+import FeedScreen from '../screens/main/feed/FeedScreen';
 import Favorites from '../screens/main/favorites/Favorites';
 import ProfileScreen from '../screens/main/profile/ProfileScreen';
 //@ts-ignore 
@@ -45,7 +45,7 @@ const MainStackNavigator: FC = () => {
                 inactiveTintColor: 'gray',
             }}
         >
-            <Tab.Screen name="Feed" component={Feed}/>
+            <Tab.Screen name="Feed" component={FeedScreen}/>
             <Tab.Screen name="Favorites" component={Favorites}/>
             <Tab.Screen name="Profile" component={ProfileScreen}/>
         </Tab.Navigator>

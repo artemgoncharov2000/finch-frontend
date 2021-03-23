@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, View, Image, FlatList, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, ScrollView, RefreshControl } from 'react-native';
 import GuidePreview from '../../../components/guide/GuidePreview';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SearchField from '../../../components/input_fields/SearchField';
@@ -11,17 +11,24 @@ import LocalStorage from '../../../local_storage/LocalStorage';
 import { connect } from 'react-redux';
 import { getFeed } from '../../../api/feed/feedRequests';
 
-const Feed = (props) => {
+const FeedScreen = (props) => {
     const insets = useSafeAreaInsets();
     const [guidesIds, setGuidesIds] = useState<string[]>([])
+    const [refreshing, setRefreshing] = React.useState(false);
 
     useEffect(() => {
         // setGuides([]);
 
         // getGuideListFromServer(props.userToken);
+        setRefreshing(false);
+
         getFeed(props.userToken)
         .then(ids => setGuidesIds(ids));
-    }, [])
+    }, [refreshing])
+
+    const onRefresh = () => {
+        setRefreshing(true);
+    }
 
     return (
         <View style={{
@@ -43,6 +50,8 @@ const Feed = (props) => {
                     renderItem={({ item, index }) => {
                         return <GuidePreview guideId={guidesIds[index]}  onPress={() => props.navigation.navigate('GuideStackScreen', { guideId: guidesIds[index] })} />
                     }}
+                    
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
                 />
             </View>
         </View>
@@ -53,7 +62,7 @@ const mapStateToProps = (state) => {
         userToken: state.tokenReducer.userToken
     }
 }
-export default connect(mapStateToProps)(Feed);
+export default connect(mapStateToProps)(FeedScreen);
 
 const styles = StyleSheet.create({
     header: {

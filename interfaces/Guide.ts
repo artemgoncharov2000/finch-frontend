@@ -5,5 +5,5 @@ export default interface Guide {
     thumbnailUrl: string,
     title: string,
     travelDate: string,
-    created: string
+    created?: string
 }

@@ -16,12 +16,12 @@ const GuideView = (props) => {
     const [cards, setCards] = useState<Card[]>()
 
     useEffect(() => {
-        console.log(props)
+        
         const guideId = props.props.route.params.guideId;
 
         getGuideById(props.userToken, guideId)
             .then(data => {
-                console.log(data)
+    
                 setGuide({
                     title: data.title,
                     id: data.id,
@@ -65,18 +65,10 @@ const GuideView = (props) => {
                 <FlatList
                     data={cards}
                     renderItem={({ item, index }) => {
-                        return <CardPreview title={cards[index].title} uri={cards[index].thumbnailUrl} />
+                        return <CardPreview cardId={item.id} navigation={props.props.navigation}/>
                     }}
                 />
             </View>
-
-            {/* <View style={styles.cardsContainer}>
-                {
-                    cards.map((item, ind) => ())
-                }
-            </View> */}
-
-
         </View>
     );
 }

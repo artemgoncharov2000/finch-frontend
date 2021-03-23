@@ -73,7 +73,7 @@ const GuidePreview: FC<Props> = (props) => {
                         source={{ uri: BASE_URL + '/i/' + guide.thumnailUrl }}
                         style={{
                             height: 180,
-                            width: 374,
+                            width: 375,
 
                         }}
                     />
