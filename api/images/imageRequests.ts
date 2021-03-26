@@ -18,7 +18,10 @@ export async function uploadImage(token: string, uri: string) {
             },
             data: formData
     })
-    .then(response => response.data)
+    .then(response => {
+        console.log(response)
+        return response.data.id
+    })
     .catch(error => console.error(error));
 
     return request;

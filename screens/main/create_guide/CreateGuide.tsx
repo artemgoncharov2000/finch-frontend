@@ -2,14 +2,11 @@ import React, { FC, useState, useEffect } from 'react'
 import { StyleSheet, Text, View, Image, Modal, Button, Platform } from 'react-native';
 import InputField from '../../../components/input_fields/InputField';
 import * as ImagePicker from 'expo-image-picker'
-import Constants from 'expo-constants'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AddImageButtonLarge from '../../../components/buttons/AddImageButtonLarge';
 import { ScrollView } from 'react-native-gesture-handler';
-import axios from 'axios';
 import { connect } from 'react-redux';
 import { setGuide, setGuideId } from '../../../redux/actions/guideActions'
-// import { AsyncStorage } from 'react-native';
 import { BASE_URL } from '../../../api/baseURL';
 import Guide from '../../../interfaces/Guide';
 import { createGuide, updateGuide } from '../../../api/guide/guideRequests';
@@ -96,9 +93,11 @@ const CreateGuide = (props: Props) => {
     const onImagePickerButtonPress = () => {
         pickImage()
             .then(uri => {
+                console.log('uri', uri),
+                console.log('userToken', props.userToken)
                 uploadImage(props.userToken, uri)
                     .then(id => {
-                        // console.log('imageId', imageId)
+                        
                         setGuide(prevState => ({
                             ...prevState,
                             thumbnailUrl: id
@@ -135,7 +134,6 @@ const CreateGuide = (props: Props) => {
                         //         alert('something goes wrong!');
                         //     }
                         // })
-
 
                     }}
                     title="Create"

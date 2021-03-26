@@ -2,7 +2,7 @@ import React, {FC} from 'react';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import FeedScreen from '../screens/main/feed/FeedScreen';
-import Favorites from '../screens/main/favorites/Favorites';
+import FavoritesScreen from '../screens/main/favorites/FavoritesScreen';
 import ProfileScreen from '../screens/main/profile/ProfileScreen';
 //@ts-ignore 
 import FeedIcon from '../assets/nav/feed-icon.svg'
@@ -46,7 +46,7 @@ const MainStackNavigator: FC = () => {
             }}
         >
             <Tab.Screen name="Feed" component={FeedScreen}/>
-            <Tab.Screen name="Favorites" component={Favorites}/>
+            <Tab.Screen name="Favorites" component={FavoritesScreen}/>
             <Tab.Screen name="Profile" component={ProfileScreen}/>
         </Tab.Navigator>
         

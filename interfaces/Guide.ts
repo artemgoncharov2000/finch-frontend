@@ -1,9 +1,14 @@
 export default interface Guide {
+    authorUsername?: string,
+    created?: string,
     description: string,
-    id: {id: string},
-    location: string,
+    favourite?: boolean
+    id: string,
+    liked?: boolean,
+    likesnum?: number,
+    location?: string,
     thumbnailUrl: string,
     title: string,
-    travelDate: string,
-    created?: string
+    travelDate?: string,
+    type?: string   
 }

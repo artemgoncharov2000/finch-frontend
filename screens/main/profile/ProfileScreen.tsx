@@ -18,6 +18,7 @@ import EmptyIcon from '../../../assets/profile/empty-icon.svg'
 import NewGuideButton from '../../../components/buttons/NewGuideButton'
 import { getGuidesByUser } from '../../../api/guide/guideRequests';
 import Guide from '../../../interfaces/Guide';
+import userReducer from '../../../redux/reducers/userReducer';
 interface Props {
     navigation: any,
     user: User,
@@ -27,7 +28,7 @@ interface Props {
 
 const ProfileScreen = (props: Props) => {
     const insets = useSafeAreaInsets();
-    const [guides, setGuides] = useState<Guide[]>([]);
+    const [guides, setGuides] = useState<String[]>([]);
 
     useEffect(() => {
         getGuidesByUser(props.userToken, 'me')
@@ -41,7 +42,8 @@ const ProfileScreen = (props: Props) => {
     return (
         <View style={{
             flex: 1,
-            paddingTop: insets.top
+            paddingTop: insets.top,
+            backgroundColor: '#fff'
         }}
         >
             <View style={styles.header}>
@@ -58,7 +60,7 @@ const ProfileScreen = (props: Props) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <View style={styles.profileInfo}>
+            <View style={styles.profileContainer}>
                 <View style={styles.profileInfoHeader}>
                     <View
                         style={{
@@ -156,7 +158,7 @@ const ProfileScreen = (props: Props) => {
                                     data={guides}
                                     renderItem={({ item, index }) => {
                                         //const guide = getGuideFromServer('dfdf', item)
-                                        return <GuidePreview title={guides[index].title} subTitle={guides[index].description} imageId={guides[index].thumbnailUrl} onPress={() => props.navigation.navigate('GuideStackScreen', { guide: guides[index] })} />
+                                        return <GuidePreview username={props.user.username} profilePhotoUrl={props.user.profilePhotoUrl} guideId={item}  onPress={() => props.navigation.navigate('GuideStackScreen', { guideId: item})} />
                                     }}
                                 />
                             </>
@@ -186,12 +188,11 @@ const styles = StyleSheet.create({
     },
     header: {
         flex: 1,
-        // justifyContent: "space-between",
         flexDirection: "row",
         alignItems: "center",
         borderBottomColor: "#A8B0BA",
-        borderBottomWidth: 1,
-
+        borderBottomWidth: 0.5,
+        backgroundColor: '#fff'
     },
     headerLeftItem: {
         flex: 1,
@@ -215,12 +216,13 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         paddingRight: 10
     },
-    profileInfo: {
+    profileContainer: {
         flex: 4,
         borderBottomColor: "#A8B0BA",
-        borderBottomWidth: 1,
+        borderBottomWidth: 0.5,
         paddingVertical: 20,
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
+        backgroundColor: '#fff'
     },
     profileInfoHeader: {
         flex: 1,
@@ -237,7 +239,8 @@ const styles = StyleSheet.create({
 
     body: {
         flex: 15,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: '#fff'
     },
     emptyList: {
         alignSelf: 'center',

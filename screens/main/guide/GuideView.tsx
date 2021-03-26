@@ -16,19 +16,19 @@ const GuideView = (props) => {
     const [cards, setCards] = useState<Card[]>()
 
     useEffect(() => {
-        
+
         const guideId = props.props.route.params.guideId;
 
         getGuideById(props.userToken, guideId)
             .then(data => {
-    
+                const date = new Date(data.travelDate)
                 setGuide({
                     title: data.title,
                     id: data.id,
                     description: data.description,
                     location: data.location,
                     thumbnailUrl: data.thumbnailUrl,
-                    travelDate: data.travelDate,
+                    travelDate: date.toLocaleString('default', { month: 'short' }) + ' ' + date.getDate() + ', ' + date.getFullYear(),
                     created: data.created
                 })
             })
@@ -44,31 +44,42 @@ const GuideView = (props) => {
 
     return (
         <View style={styles.container}>
-
-            <View style={styles.imageContainer}>
-                <View style={styles.backButton}>
-                    <BackButton navigation={props.props.navigation} />
+            <ScrollView>
+                <View style={styles.imageContainer}>
+                    <View style={styles.backButton}>
+                        <BackButton navigation={props.props.navigation} />
+                    </View>
+                    <Image style={{ height: 256, width: 415 }} source={{ uri: BASE_URL + '/i/' + guide?.thumbnailUrl }} />
                 </View>
-                <Image style={{ height: 256, width: 415 }} source={{ uri: BASE_URL + '/i/' + guide?.thumbnailUrl }} />
-            </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.title}>{guide?.title}</Text>
-                {/* <Text style={styles.subtitle}>{guide.}</Text> */}
-                <Text style={styles.subtitle}>{guide?.location}</Text>
-                <Text style={styles.subtitle}>{guide?.travelDate}</Text>
-            </View>
-            <View style={styles.descriptionContainer}>
-                <Text style={styles.description}>Description</Text>
-                <Text>{guide?.description}</Text>
-            </View>
-            <View style={styles.cardsContainer}>
-                <FlatList
+                <View style={styles.infoContainer}>
+                    <Text style={styles.title}>{guide?.title}</Text>
+                </View>
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.description}>Description</Text>
+                    <Text>{guide?.description}</Text>
+                </View>
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.description}>Location</Text>
+                    <Text>{guide?.location}</Text>
+                </View>
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.description}>Travel date</Text>
+                    <Text>{guide?.travelDate}</Text>
+                </View>
+                <View style={styles.cardsContainer}>
+                    {cards?.map((card, index) => {
+                        return (
+                            <CardPreview cardId={card.id} key={index} navigation={props.props.navigation} />
+                        );
+                    })}
+                    {/* <FlatList
                     data={cards}
                     renderItem={({ item, index }) => {
-                        return <CardPreview cardId={item.id} navigation={props.props.navigation}/>
+                        return
                     }}
-                />
-            </View>
+                /> */}
+                </View>
+            </ScrollView>
         </View>
     );
 }

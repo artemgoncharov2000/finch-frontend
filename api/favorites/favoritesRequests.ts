@@ -1,10 +1,10 @@
 import axios from 'axios';
 import {BASE_URL} from '../baseURL';
 
-export async function getFeed(token:string) {
+export async function getFavorites(token: string) {
     const request = await axios({
         method: 'GET',
-        url: BASE_URL + '/feed',
+        url: BASE_URL + '/guides/favourites',
         headers: {
             authorization: token
         }

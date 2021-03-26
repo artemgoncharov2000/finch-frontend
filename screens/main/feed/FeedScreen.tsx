@@ -11,19 +11,21 @@ import LocalStorage from '../../../local_storage/LocalStorage';
 import { connect } from 'react-redux';
 import { getFeed } from '../../../api/feed/feedRequests';
 
+interface FeedItem{
+    id: string,
+    username: string,
+    profilePhotoUrl: string
+}
+
 const FeedScreen = (props) => {
     const insets = useSafeAreaInsets();
-    const [guidesIds, setGuidesIds] = useState<string[]>([])
+    const [feedItems, setFeedItems] = useState<FeedItem[]>([])
     const [refreshing, setRefreshing] = React.useState(false);
 
     useEffect(() => {
-        // setGuides([]);
-
-        // getGuideListFromServer(props.userToken);
         setRefreshing(false);
-
         getFeed(props.userToken)
-        .then(ids => setGuidesIds(ids));
+        .then((feedItems: FeedItem[]) => setFeedItems(feedItems.reverse()));
     }, [refreshing])
 
     const onRefresh = () => {
@@ -46,9 +48,14 @@ const FeedScreen = (props) => {
             }}
             >
                 <FlatList
-                    data={guidesIds}
+                    data={feedItems}
                     renderItem={({ item, index }) => {
-                        return <GuidePreview guideId={guidesIds[index]}  onPress={() => props.navigation.navigate('GuideStackScreen', { guideId: guidesIds[index] })} />
+                        return <GuidePreview 
+                            profilePhotoUrl={item.profilePhotoUrl}
+                            username={item.username} 
+                            guideId={item.id} 
+                            onPress={() => props.navigation.navigate('GuideStackScreen', { guideId: item.id })} 
+                        />
                     }}
                     
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
@@ -69,6 +76,8 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20
+        padding: 20,
+        borderBottomColor: "#A8B0BA",
+        borderBottomWidth: 0.5
     }
 })

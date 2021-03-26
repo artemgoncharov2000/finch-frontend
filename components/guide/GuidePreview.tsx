@@ -15,7 +15,8 @@ import Guide from '../../interfaces/Guide';
 import User from '../../interfaces/User';
 
 interface Props {
-    // username: string,
+    username: string,
+    profilePhotoUrl: string,
     guideId: string,
     userToken: string
     onPress: () => void
@@ -24,10 +25,6 @@ interface Props {
 
 const GuidePreview: FC<Props> = (props) => {
 
-    const [user, setUser] = useState({
-        username: '',
-        profilePhotoUrl: ''
-    });
     const [guide, setGuide] = useState({
         description: '',
         thumnailUrl: '',
@@ -38,15 +35,7 @@ const GuidePreview: FC<Props> = (props) => {
     useEffect(() => {
         getGuideById(props.userToken, props.guideId)
         .then((guide: Guide) => {
-            getUserByUsername(props.userToken, guide.authorUsername)
-            .then((user: User) => {
-                setUser({
-                    username: user.username,
-                    profilePhotoUrl: user.profilePhotoUrl
-                })
-            })
             const date = new Date(guide.created);
-
             setGuide({
                 description: guide.description,
                 thumnailUrl: guide.thumbnailUrl,
@@ -61,9 +50,9 @@ const GuidePreview: FC<Props> = (props) => {
 
         <View style={styles.container}>
             <View style={styles.header} >
-                <Image style={styles.profilePhoto} source={{uri: BASE_URL + '/i/' + user.profilePhotoUrl}} />
+                <Image style={styles.profilePhoto} source={{uri: BASE_URL + '/i/' + props.profilePhotoUrl}} />
                 <View style={styles.headerInfoContainer}>
-                    <Text style={styles.usernameText}>{user.username}</Text>
+                    <Text style={styles.usernameText}>{props.username}</Text>
                     <Text style={styles.dateText}>{guide.created}</Text>
                 </View>
             </View>
@@ -74,30 +63,11 @@ const GuidePreview: FC<Props> = (props) => {
                         style={{
                             height: 180,
                             width: 375,
-
                         }}
                     />
                 </TouchableOpacity>
             </View>
-            <View style={styles.actionsContainer}>
-                <View style={styles.actionElement}>
-                    <TouchableOpacity>
-                        <LikeIcon width={32} height={32} fill="#6C7889" />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.actionElement}>
-                    <TouchableOpacity>
-                        <CommentIcon width={32} height={32} fill="#6C7889" />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.actionElement}>
-                    <TouchableOpacity>
-                        <MessageIcon width={32} height={32} fill="#6C7889" />
-                    </TouchableOpacity>
-                </View>
-
-
-            </View>
+            
             <View style={styles.tagsContainer}>
 
             </View>
@@ -112,6 +82,23 @@ const GuidePreview: FC<Props> = (props) => {
                 >
                     {guide.description}
                 </Text>
+            </View>
+            <View style={styles.actionsContainer}>
+                <View style={styles.actionElement}>
+                    <TouchableOpacity>
+                        <LikeIcon width={20} height={20} fill="#6C7889" />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.actionElement}>
+                    <TouchableOpacity>
+                        <CommentIcon width={20} height={20}fill="#6C7889" />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.actionElement}>
+                    <TouchableOpacity>
+                        <MessageIcon width={20} height={20} fill="#6C7889" />
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
 
@@ -157,15 +144,7 @@ const styles = StyleSheet.create({
         color: "#6C7889",
         fontSize: 15
     },
-    actionsContainer: {
-        flexDirection: 'row',
-
-        paddingHorizontal: 10,
-        paddingVertical: 5
-    },
-    actionElement: {
-        paddingRight: 5
-    },
+    
     tagsContainer: {
 
     },
@@ -183,9 +162,19 @@ const styles = StyleSheet.create({
         fontStyle: 'normal',
         fontWeight: "400",
         fontSize: 16,
-        color: "grey",
+        color: "#6C7889",
         paddingHorizontal: 10,
         paddingVertical: 5,
         marginBottom: 10
-    }
+    },
+    actionsContainer: {
+        flexDirection: 'row',
+        borderTopColor: '#6C7889',
+        borderTopWidth: 0.5,
+        paddingVertical: 10,
+        margin: 10
+    },
+    actionElement: {
+        paddingRight: 50
+    },
 })

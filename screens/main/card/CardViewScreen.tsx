@@ -4,14 +4,17 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BASE_URL } from '../../../api/baseURL';
 
+
 const CardViewScreen = (props) => {
     const [content, setContent] = useState([])
     const insets = useSafeAreaInsets();
 
+    
+
     useEffect(() => {
         const data = props.props.route.params.content;
 
-        setContent(JSON.parse(data));
+        setContent(data);
         console.log('content', content);
     }, [])
 
@@ -51,6 +54,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
     textItem: {
+        
         fontSize: 17
     },
     imageItemContainer: {
