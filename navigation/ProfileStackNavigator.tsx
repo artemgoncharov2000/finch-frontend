@@ -9,6 +9,7 @@ import ProfileOptionsScreen from '../screens/main/profile/ProfileOptionsScreen';
 const ProfileStackNavigator = ({ route, navigation }) => {
   const CreateStack = createStackNavigator();
   const { destination } = route.params;
+  console.log(destination)
   return (
     <CreateStack.Navigator initialRouteName={destination}>
       <CreateStack.Screen

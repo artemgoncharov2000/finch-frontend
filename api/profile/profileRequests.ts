@@ -26,11 +26,10 @@ export async function getUserByUsername(token: string, username: string) {
     .catch(error => console.error(error));
     return request;
 }
-
 export async function getUserSubscribers(token: string) {
     const request = await axios({
         method: 'GET',
-        url: BASE_URL + "/user/subs/subscribers",
+        url: BASE_URL + "/users/subs/subscribers",
         headers: {
             authorization: token
         }

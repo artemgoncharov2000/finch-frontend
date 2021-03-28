@@ -29,13 +29,13 @@ const CardViewScreen = (props) => {
                     content.map((item, index) => {
                         if (item.type === 'text')
                             return (
-                                <View style={styles.textItemContainer}>
+                                <View key={index} style={styles.textItemContainer}>
                                     <Text style={styles.textItem}>{item.value}</Text>
                                 </View>
                             )
                         else
                             return (
-                                <View style={styles.imageItemContainer}>
+                                <View key={index} style={styles.imageItemContainer}>
                                     <Image style={styles.imageItem} source={{ uri: BASE_URL + '/i/' + item.value }} />
                                 </View>
                             )

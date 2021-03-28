@@ -4,7 +4,7 @@ import InputField from '../../../components/input_fields/InputField';
 import * as ImagePicker from 'expo-image-picker'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AddImageButtonLarge from '../../../components/buttons/AddImageButtonLarge';
-import { ScrollView } from 'react-native-gesture-handler';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { setGuide, setGuideId } from '../../../redux/actions/guideActions'
 import { BASE_URL } from '../../../api/baseURL';
@@ -12,32 +12,34 @@ import Guide from '../../../interfaces/Guide';
 import { createGuide, updateGuide } from '../../../api/guide/guideRequests';
 import { uploadImage } from '../../../api/images/imageRequests';
 import LocalStorage from '../../../local_storage/LocalStorage';
+import { Card } from '../../../interfaces/Card';
+import { createCard } from '../../../api/card/cardRequests';
 
 interface Props {
-    guide: Guide,
     navigation: any,
-    setGuide: (guide: Guide) => void
 }
 
-const CreateGuide = (props: Props) => {
+const CreateGuideScreen = (props: Props) => {
 
     const [date, setDate] = useState(new Date(1598051730000));
     const [show, setShow] = useState(false);
 
-    const [guide, setGuide] = useState<Guide>({
+    const [guide, setGuide] = useState({
         title: '',
         description: '',
         travelDate: '',
         thumbnailUrl: '',
-        id: { id: '' },
+        id: '',
         location: ''
     })
+
+    const [cards, setCards] = useState<Card[]>([]);
 
     useEffect(() => {
         getAccessToDeviceLibrary();
         getAccessToCamera();
     }, []);
-
+    
     const getAccessToDeviceLibrary = async () => {
         if (Platform.OS !== 'web') {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -93,19 +95,13 @@ const CreateGuide = (props: Props) => {
     const onImagePickerButtonPress = () => {
         pickImage()
             .then(uri => {
-                console.log('uri', uri),
-                console.log('userToken', props.userToken)
                 uploadImage(props.userToken, uri)
                     .then(id => {
-                        
                         setGuide(prevState => ({
                             ...prevState,
                             thumbnailUrl: id
                         }))
-
-                    })
-
-                //uploadImage(uri);
+                    });
             })
     }
 
@@ -119,6 +115,9 @@ const CreateGuide = (props: Props) => {
         return result.uri;
     };
 
+    const onAddCardHandle = (card: Card) => {
+        setCards(cards.concat([card]));
+    }
     React.useLayoutEffect(() => {
         props.navigation.setOptions({
             headerRight: () => (
@@ -126,6 +125,17 @@ const CreateGuide = (props: Props) => {
                     onPress={() => {
 
                         createGuide(props.userToken, guide)
+                            .then(guideId => {
+                                console.log('guideId', guideId);
+
+                                if(cards){
+                                    cards.map((card, index) => {
+                                        createCard(props.userToken, guideId, card);
+                                    })
+                                }
+
+                                props.navigation.goBack();
+                            })
                             .catch(error => console.log(error))
                         // .then(guideId => {
                         //     if (guideId) {
@@ -134,13 +144,12 @@ const CreateGuide = (props: Props) => {
                         //         alert('something goes wrong!');
                         //     }
                         // })
-
                     }}
                     title="Create"
                 />
             ),
         });
-    }, [props.navigation, guide]);
+    }, [props.navigation, guide, cards]);
 
     return (
         <View style={styles.container}>
@@ -173,7 +182,17 @@ const CreateGuide = (props: Props) => {
                 <Text style={{ fontWeight: "600" }}>Where it was?</Text>
                 <InputField placeholder="It was in..." value={guide.location} onChangeText={onChangeLocation} />
                 <Text style={{ fontWeight: "600" }}>Add some cards</Text>
-                <Button title='Add card' onPress={() => { props.navigation.navigate('NewCard') }}></Button>
+                <FlatList 
+                    data={cards}
+                    renderItem={({item, index}) => {
+                        return (
+                            <View>
+                                <Text>{item.title}</Text>
+                            </View>
+                        )
+                    }}
+                />
+                <Button title='Add card' onPress={() => { props.navigation.navigate('NewCard', {onAddCardHandle: onAddCardHandle})}}></Button>
             </View>
 
             {/* </ScrollView> */}
@@ -184,8 +203,6 @@ const CreateGuide = (props: Props) => {
 
 const mapStateToProps = (state) => {
     return {
-        guide: state.guideReducer.guide,
-        guideId: state.guideReducer.guide.id.id,
         userToken: state.tokenReducer.userToken
     }
 }
@@ -197,7 +214,7 @@ const mapDispatchToProps = (dispatch: (arg0: { type: string; payload: string | G
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateGuide);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateGuideScreen);
 
 const styles = StyleSheet.create({
     container: {

@@ -31,7 +31,8 @@ export async function getCardById(token: string, id: string) {
 }
 
 
-export async function createCard(token: string, card: Card){
+export async function createCard(token: string, guideId: string, card: Card){
+    console.log(card);
     const request = await axios({
         method: 'POST',
         url: BASE_URL + "/cards",
@@ -39,10 +40,9 @@ export async function createCard(token: string, card: Card){
             authorization: token
         },
         data: {
-            content: JSON.stringify(card.content),
-            guideId: card.guideId.id,
+            content: card.content,
+            guideId: guideId,
             location: card.location,
-            tags: card.tags,
             thumbnailUrl: card.thumbnailUrl,
             title: card.title
         }

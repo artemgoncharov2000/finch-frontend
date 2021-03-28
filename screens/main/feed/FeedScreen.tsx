@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, FC } from 'react'
 import { StyleSheet, Text, View, Image, FlatList, ScrollView, RefreshControl } from 'react-native';
 import GuidePreview from '../../../components/guide/GuidePreview';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,7 +7,6 @@ import axios from 'axios';
 import { AsyncStorage } from 'react-native';
 import { BASE_URL } from '../../../api/baseURL';
 import Guide from '../../../interfaces/Guide';
-import LocalStorage from '../../../local_storage/LocalStorage';
 import { connect } from 'react-redux';
 import { getFeed } from '../../../api/feed/feedRequests';
 
@@ -16,8 +15,11 @@ interface FeedItem{
     username: string,
     profilePhotoUrl: string
 }
-
-const FeedScreen = (props) => {
+interface Props{
+    userToken: string,
+    navigation: any
+}
+const FeedScreen: FC<Props> = (props) => {
     const insets = useSafeAreaInsets();
     const [feedItems, setFeedItems] = useState<FeedItem[]>([])
     const [refreshing, setRefreshing] = React.useState(false);
@@ -64,7 +66,7 @@ const FeedScreen = (props) => {
         </View>
     )
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
     return {
         userToken: state.tokenReducer.userToken
     }

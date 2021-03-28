@@ -48,8 +48,10 @@ const UsersList = (props) => {
         <View style={styles.container}>
             <FlatList
                 data={users}
-                renderItem={({item}) => <ListItem value={item}/>}
+                renderItem={({item, index}) => <ListItem key={index} value={item}/>}
+                keyExtractor={(item, index) => index.toString()}
             />
+            
         </View>
     );    
 }

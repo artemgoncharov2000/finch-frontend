@@ -160,6 +160,7 @@ const ProfileScreen = (props: Props) => {
                                         //const guide = getGuideFromServer('dfdf', item)
                                         return <GuidePreview username={props.user.username} profilePhotoUrl={props.user.profilePhotoUrl} guideId={item}  onPress={() => props.navigation.navigate('GuideStackScreen', { guideId: item})} />
                                     }}
+                                    keyExtractor={(item, index) => index.toString()}
                                 />
                             </>
                         )

@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import CreateGuide from '../screens/main/create_guide/CreateGuide';
-import CreateCard from '../screens/main/create_card/CreateCard';
+import CreateGuideScreen from '../screens/main/create_guide/CreateGuideScreen';
+import CreateCardScreen from '../screens/main/create_card/CreateCardScreen';
 
 
 const CreateStackNavigator = (props) => {
@@ -11,7 +11,7 @@ const CreateStackNavigator = (props) => {
     <CreateStack.Navigator>
       <CreateStack.Screen
         name="NewGuide"
-        component={CreateGuide}
+        component={CreateGuideScreen}
         options={({navigation, route}) => ({
           headerBackTitle: "Back",
           headerTitle: "New Guide"
@@ -19,7 +19,7 @@ const CreateStackNavigator = (props) => {
       />
       <CreateStack.Screen
         name="NewCard"
-        component={CreateCard}
+        component={CreateCardScreen}
         options={{
           headerBackTitle: "Back",
           headerTitle: "New Card"

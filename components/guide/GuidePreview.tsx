@@ -3,14 +3,21 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { BASE_URL } from '../../api/baseURL';
-import { getGuideById } from '../../api/guide/guideRequests';
+import { addGuideToFavourites, dislikeGuide, getGuideById, likeGuide, removeGuideFromFavourites } from '../../api/guide/guideRequests';
 import { getUserByUsername } from '../../api/profile/profileRequests';
 //@ts-ignore
 import CommentIcon from '../../assets/icons/comment-icon.svg';
 //@ts-ignore
 import LikeIcon from '../../assets/icons/like-icon.svg';
 //@ts-ignore
+import LikeIconFilled from '../../assets/icons/like-icon-filled.svg';
+//@ts-ignore
 import MessageIcon from '../../assets/icons/message-icon.svg';
+//@ts-ignore
+import FavoritesIcon from '../../assets/icons/favorites-icon.svg';
+//@ts-ignore
+import FavoritesIconFilled from '../../assets/icons/favorites-icon-filled.svg';
+
 import Guide from '../../interfaces/Guide';
 import User from '../../interfaces/User';
 
@@ -29,7 +36,10 @@ const GuidePreview: FC<Props> = (props) => {
         description: '',
         thumnailUrl: '',
         title: '',
-        created: ''
+        created: '',
+        liked: true,
+        likesnum: 0,
+        favourite: true
     })
     
     useEffect(() => {
@@ -40,11 +50,71 @@ const GuidePreview: FC<Props> = (props) => {
                 description: guide.description,
                 thumnailUrl: guide.thumbnailUrl,
                 title: guide.title,
-                created: date.toLocaleString('default', { month: 'short' }) + ' ' + date.getDate() + ', ' + date.getFullYear()
+                created: date.toLocaleString('default', { month: 'short' }) + ' ' + date.getDate() + ', ' + date.getFullYear(),
+                liked: guide.liked,
+                likesnum: guide.likesnum,
+                favourite: guide.favourite
             })
         })
         
     }, [])
+
+    const onLikeButtonPress = () => {
+        if (guide.liked) {
+            dislikeGuide(props.userToken, props.guideId)
+            .then(result => {
+                if (result === 'Success') {
+                    setGuide(prevState => ({
+                        ...prevState,
+                        liked: false,
+                        likesnum: prevState.likesnum - 1
+                    }))
+                } else {
+                    
+                    alert('Something goes wrong!!!');
+                }
+            })
+            
+
+        } else {
+            likeGuide(props.userToken, props.guideId)
+            .then(result => {
+                if (result === 'Success') {
+                    setGuide(prevState => ({
+                        ...prevState,
+                        liked: true,
+                        likesnum: prevState.likesnum + 1
+                    }))
+                } else {
+                    alert('Something goes wrong!!!');
+                }
+            })
+        }   
+    }
+
+    const onFavouriteButtonPress = () => {
+        if (guide.favourite) {
+            removeGuideFromFavourites(props.userToken, props.guideId)
+            .then(result => {
+                if (result === 'Success'){
+                    setGuide(prevState => ({
+                        ...prevState,
+                        favourite: false
+                    }))
+                }
+            })
+        } else {
+            addGuideToFavourites(props.userToken, props.guideId)
+            .then(result => {
+                if (result === 'Success'){
+                    setGuide(prevState => ({
+                        ...prevState,
+                        favourite: true
+                    }))
+                }
+            })
+        }
+    }
 
     return (
 
@@ -85,11 +155,18 @@ const GuidePreview: FC<Props> = (props) => {
             </View>
             <View style={styles.actionsContainer}>
                 <View style={styles.actionElement}>
-                    <TouchableOpacity>
-                        <LikeIcon width={20} height={20} fill="#6C7889" />
+                    <TouchableOpacity onPress={onLikeButtonPress}>
+                        {
+                            guide.liked 
+                            ?
+                            <LikeIconFilled width={20} height={20} fill="#000" />
+                            :
+                            <LikeIcon width={20} height={20} fill="#6C7889" />
+                        }
                     </TouchableOpacity>
+                    <Text style={styles.text}>{guide.likesnum}</Text>
                 </View>
-                <View style={styles.actionElement}>
+                {/* <View style={styles.actionElement}>
                     <TouchableOpacity>
                         <CommentIcon width={20} height={20}fill="#6C7889" />
                     </TouchableOpacity>
@@ -97,6 +174,17 @@ const GuidePreview: FC<Props> = (props) => {
                 <View style={styles.actionElement}>
                     <TouchableOpacity>
                         <MessageIcon width={20} height={20} fill="#6C7889" />
+                    </TouchableOpacity>
+                </View> */}
+                <View style={styles.actionElement}>
+                    <TouchableOpacity onPress={onFavouriteButtonPress}>
+                        {
+                            guide.favourite
+                            ?
+                            <FavoritesIconFilled width={20} height={20} fill="#000" />
+                            :
+                            <FavoritesIcon width={20} height={20} fill="#6C7889" />
+                        }
                     </TouchableOpacity>
                 </View>
             </View>
@@ -175,6 +263,10 @@ const styles = StyleSheet.create({
         margin: 10
     },
     actionElement: {
-        paddingRight: 50
+        paddingRight: 50,
+        flexDirection: 'row'
     },
+    text: {
+        color: '#6C7889'
+    }
 })

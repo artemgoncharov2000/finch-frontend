@@ -4,9 +4,9 @@ export interface ContentItem {
 }
 export interface Card{
     content: ContentItem[],
-    guideId: {id: string},
+    guideId: string,
     location: string,
-    tags: string[],
     thumbnailUrl: string,
-    title: string
+    title: string,
+    type?: string
 }

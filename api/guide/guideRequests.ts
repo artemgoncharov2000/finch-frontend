@@ -45,7 +45,7 @@ export async function createGuide(token: string, guide: Guide) {
             travelData: guide.travelDate
         }
     })
-    .then(response => response.data)
+    .then(response => response.data.id)
     .catch(error => console.error(error));
 
     return request;
@@ -66,6 +66,62 @@ export async function updateGuide(token: string, guideId: string, guide: Guide) 
             title: guide.title,
             travelData: guide.travelDate
         }
+    })
+    .then(response => response.data)
+    .catch(error => console.error(error));
+
+    return request;
+}
+
+export async function likeGuide(token: string, guideId: string) {
+    const request = await axios({
+        method: 'POST',
+        url: BASE_URL + '/guides/likes/' + guideId,
+        headers: {
+            authorization: token
+        },
+    })
+    .then(response => response.data)
+    .catch(error => console.error(error))
+
+    return request;
+}
+
+export async function dislikeGuide(token: string, guideId: string) {
+    const request = await axios({
+        method: 'DELETE',
+        url: BASE_URL + '/guides/likes/' + guideId,
+        headers: {
+            authorization: token
+        },
+    })
+    .then(response => response.data)
+    .catch(error => console.error(error))
+
+    return request; 
+}
+
+export async function addGuideToFavourites(token: string, guideId: string) {
+    const request = await axios({
+        method: 'POST',
+        url: BASE_URL + '/guides/favourites/' + guideId,
+        headers: {
+            authorization: token
+        },
+    })
+    .then(response => response.data)
+    .catch(error => console.error(error));
+
+    return request; 
+}
+
+export async function removeGuideFromFavourites(token: string, guideId: string) {
+    const request = await axios({
+        method: 'DELETE',
+        url: BASE_URL + '/guides/favourites/' + guideId,
+        headers: {
+            authorization: token
+        },
     })
     .then(response => response.data)
     .catch(error => console.error(error));
