@@ -9,7 +9,9 @@ import { BASE_URL } from '../../../api/baseURL';
 import Guide from '../../../interfaces/Guide';
 import { connect } from 'react-redux';
 import { getFeed } from '../../../api/feed/feedRequests';
-
+//@ts-ignore
+import SearchIcon from '../../../assets/icons/search-icon-1.svg';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 interface FeedItem{
     id: string,
     username: string,
@@ -43,23 +45,26 @@ const FeedScreen: FC<Props> = (props) => {
         }}>
             <View style={styles.header}
             >
-                <SearchField />
+                {/* <SearchField /> */}
+                <Text style={styles.headerTitle}>Feed</Text>
+                <TouchableOpacity onPress={() => props.navigation.navigate('Search')}>
+                    <SearchIcon fill="#000" width="28" height="28"/>
+                </TouchableOpacity>
             </View>
-            <View style={{
-                flex: 14,
-            }}
-            >
+            <View style={styles.body}>
                 <FlatList
+                    showsVerticalScrollIndicator ={false}
                     data={feedItems}
                     renderItem={({ item, index }) => {
                         return <GuidePreview 
                             profilePhotoUrl={item.profilePhotoUrl}
+                            navigation={props.navigation}
                             username={item.username} 
                             guideId={item.id} 
-                            onPress={() => props.navigation.navigate('GuideStackScreen', { guideId: item.id })} 
+                            onPress={() => props.navigation.push('GuideStack', {screen: 'Guide', guideId: item.id })} 
                         />
                     }}
-                    
+                    keyExtractor={(item, index) => index.toString()}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
                 />
             </View>
@@ -76,10 +81,17 @@ export default connect(mapStateToProps)(FeedScreen);
 const styles = StyleSheet.create({
     header: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
         borderBottomColor: "#A8B0BA",
         borderBottomWidth: 0.5
+    },
+    headerTitle: {
+        fontWeight: '600',
+        fontSize: 25
+    },
+    body: {
+        flex: 14
     }
 })

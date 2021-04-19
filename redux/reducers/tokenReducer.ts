@@ -18,12 +18,14 @@ const tokenReducer = (state = initialState, action: any) => {
         case SIGN_IN:
             return {
                 ...state,
+                isLoading: false,
                 isSignout: false,
                 userToken: action.payload
             }  
         case SIGN_OUT:
             return {
                 ...state,
+                isLoading: false,
                 isSignout: true,
                 userToken: null
             }

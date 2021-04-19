@@ -8,5 +8,6 @@ export default interface User {
     subscriptionsCount: 0,
     title: string,
     type: string,
-    username: string
+    username: string,
+    subscribed: boolean
 }

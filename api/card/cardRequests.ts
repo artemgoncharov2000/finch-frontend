@@ -2,21 +2,20 @@ import axios from "axios";
 import {Card} from "../../interfaces/Card";
 import {BASE_URL} from "../baseURL";
 
-export async function getCardsByGuideId(token: string, guideId: string) {
+export async function getListOfCardsByGuideId(token: string, guideId: string) {
     const request = await axios({
         method: 'GET',
-        url: BASE_URL + '/cards/g/' + guideId,
+        url: BASE_URL + '/cards/g/ids/' + guideId,
         headers: {
             authorization: token
         }
     })
     .then(response => response.data)
     .catch(error => console.error(error));
-
     return request;
 }
 
-export async function getCardById(token: string, id: string) {
+export async function getCardByGuideId(token: string, id: string) {
     const request = axios({
         method: 'GET',
         url: BASE_URL + '/cards/' + id,
@@ -26,13 +25,11 @@ export async function getCardById(token: string, id: string) {
     })
     .then(response => response.data)
     .catch(error => console.error(error));
-
     return request;
 }
 
 
 export async function createCard(token: string, guideId: string, card: Card){
-    console.log(card);
     const request = await axios({
         method: 'POST',
         url: BASE_URL + "/cards",
@@ -49,5 +46,6 @@ export async function createCard(token: string, guideId: string, card: Card){
     })
     .then(response => response.data)
     .catch(error => console.error(error));
+    console.log('Card was created');
     return request;
 }

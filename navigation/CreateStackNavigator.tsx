@@ -8,7 +8,9 @@ const CreateStackNavigator = (props) => {
   const CreateStack = createStackNavigator();
   
   return (
-    <CreateStack.Navigator>
+    <CreateStack.Navigator
+      headerMode="none"
+    >
       <CreateStack.Screen
         name="NewGuide"
         component={CreateGuideScreen}

@@ -8,7 +8,7 @@ import axios from 'axios';
 import { MMKV } from 'react-native-mmkv';
 import { BASE_URL } from '../../api/baseURL';
 import { ScrollView } from 'react-native-gesture-handler';
-import {SignInUser, SignUpUser} from '../../api/auth/authentification'
+import {signInUser, signUpUser} from '../../api/auth/authentification'
 import { signIn } from '../../redux/actions/tokenActions';
 import { connect } from 'react-redux';
 import LocalStorage from '../../local_storage/LocalStorage';
@@ -52,13 +52,14 @@ const SignUpScreen: FC<Props> = (props) => {
     }
 
     const onSignUpButtonPress = () => {
-        SignUpUser(user)
+        signUpUser(user)
         .then(result => {
             console.log('result ', result)
             if (result === 'Success') {
                 console.log(result)
-                SignInUser(user)
+                signInUser(user)
                 .then(userToken => {
+                    console.log(userToken);
                     LocalStorage.save('userToken', userToken);
                     props.signIn(userToken);
                 })
@@ -67,6 +68,7 @@ const SignUpScreen: FC<Props> = (props) => {
                 alert('Something goes wrong!');
             }
         })
+        .catch(err => console.error(err))
     }
 
 
@@ -101,7 +103,7 @@ const mapDispatchToProps = (dispatch) => {
         signIn: (token: string) => dispatch(signIn(token))
     }
 }
-export default connect(mapDispatchToProps)(SignUpScreen);
+export default connect(null, mapDispatchToProps)(SignUpScreen);
 
 const styles = StyleSheet.create({
     container: {

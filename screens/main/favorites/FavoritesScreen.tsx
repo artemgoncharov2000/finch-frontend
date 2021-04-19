@@ -23,7 +23,7 @@ const FavoritesScreen = (props) => {
     useEffect(() => {
         setRefreshing(false);
         getFavorites(props.userToken)
-        .then(data => setFavorites(data));
+        .then((favorites: FavoritesItem[]) => setFavorites(favorites.reverse()));
     }, [refreshing])
 
     const onRefresh = () => {
@@ -33,7 +33,7 @@ const FavoritesScreen = (props) => {
     return (
         <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: '#fff'}}>
             <View style={styles.header}>
-                <Text>Favorites</Text>
+                <Text style={styles.headerTitle}>Favorites</Text>
             </View>
             <View style={styles.body}>
                 <FlatList 
@@ -41,9 +41,10 @@ const FavoritesScreen = (props) => {
                     renderItem={({ item, index }) => {
                         return <GuidePreview 
                             profilePhotoUrl={item.profilePhotoUrl}
+                            navigation={props.navigation}
                             username={item.username} 
                             guideId={item.id} 
-                            onPress={() => props.navigation.navigate('GuideStackScreen', { guideId: item.id })} 
+                            onPress={() => props.navigation.navigate('GuideStack', {screen: 'Guide', guideId: item.id })} 
                         />
                     }}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
@@ -64,9 +65,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         justifyContent: 'center',
-        alignItems: 'center',
+        paddingHorizontal: 20,
         borderBottomColor: "#A8B0BA",
         borderBottomWidth: 0.5
+    },
+    headerTitle: {
+        fontWeight: '600',
+        fontSize: 25
     },
     body: {
         flex: 14,

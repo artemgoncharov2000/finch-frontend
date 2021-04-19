@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react'
-import {StyleSheet, Text, View, Button} from 'react-native';
+import { StyleSheet, Text, View, Button, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import DefaultButton from '../../components/buttons/DefaultButton'
 import InputField from '../../components/input_fields/InputField';
 import SignUpScreen from './SignUpScreen'
@@ -10,7 +10,7 @@ import axios from 'axios';
 import { BASE_URL } from '../../api/baseURL';
 //import { getToken, setToken } from '../../actions/tokenActions';
 import { connect } from 'react-redux';
-import {SignInUser} from '../../api/auth/authentification';
+import { signInUser } from '../../api/auth/authentification';
 import LocalStorage from '../../local_storage/LocalStorage'
 import { signIn } from '../../redux/actions/tokenActions';
 
@@ -24,7 +24,7 @@ const SignInScreen = (props) => {
     const [user, setUser] = useState<User>({
         username: '',
         password: ''
-    })   
+    })
 
     const onUsernameChange = (value: string) => {
         setUser({
@@ -40,46 +40,42 @@ const SignInScreen = (props) => {
         })
     }
 
-    // const setTokenToStorage = async (token: string) => {
-    //     try {
-    //         await AsyncStorage.setItem('token', token)
-    //     } catch (err) {
-    //         console.log(err)
-    //     }
-        
-    // }
+    const onSignInButtonPress = () => {
+        signInUser(user)
+            .then(userToken => {
+                console.log(userToken);
+                LocalStorage.save('userToken', userToken)
+                props.signIn(userToken)
+            })
+    }
 
-    return(
-        <View style={styles.container}>
+    return (
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.container}
+        >
+            {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}> */}
             <View style={styles.titleView}>
-                <FinchIcon/>
+                <FinchIcon />
                 <Text style={styles.title}>Sign In</Text>
                 <Text style={styles.subTitle}>Welcome, adventures are waiting for you!</Text>
             </View>
             <View style={styles.inputView}>
-                <InputField placeholder="Nickname" secureTextEntry={false} onChangeText={text => onUsernameChange(text)}/>
-                <InputField placeholder="Password" secureTextEntry={true} onChangeText={text => onPasswordChange(text)}/>
+                <InputField placeholder="Nickname" secureTextEntry={false} onChangeText={text => onUsernameChange(text)} />
+                <InputField placeholder="Password" secureTextEntry={true} onChangeText={text => onPasswordChange(text)} />
             </View>
             <View style={styles.buttonView}>
-                <DefaultButton 
-                    title="Sign in" 
-                    onPress={()=> {
-                        SignInUser(user)
-                        .then(userToken => {
-                            LocalStorage.save('userToken', userToken)
-                            props.signIn(userToken)
-                           // LocalStorage.storeData('token', token);
-                          //  setTokenToStorage(token);
-                           // props.navigation.navigate('MainStackScreen');
-                        })
-                    }}
+                <DefaultButton
+                    title="Sign in"
+                    onPress={() => onSignInButtonPress()}
                 />
                 <View style={styles.signupContainer}>
                     <Text style={styles.signupText}>No account?</Text>
-                    <Button title="Sign Up" onPress={()=>{props.navigation.navigate('SignUp')}} />
+                    <Button title="Sign Up" onPress={() => { props.navigation.navigate('SignUp') }} />
                 </View>
             </View>
-        </View>
+            {/* </TouchableWithoutFeedback> */}
+        </KeyboardAvoidingView>
     );
 }
 
@@ -92,7 +88,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         signIn: (value) => dispatch(signIn(value)),
-        
+
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(SignInScreen);
@@ -101,7 +97,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: 'white',
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         paddingHorizontal: 20
     },
     titleView: {
@@ -131,17 +127,17 @@ const styles = StyleSheet.create({
     buttonView: {
         flex: 2,
         justifyContent: 'center',
-        
+
     },
     signupContainer: {
         paddingTop: 10,
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        
+
     },
     signupText: {
         color: "grey"
     }
-    
+
 })

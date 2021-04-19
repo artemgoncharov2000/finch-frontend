@@ -24,7 +24,6 @@ const initialState = {
 const userReducer = (state = initialState, action: Action) => {
     switch (action.type) {
         case SET_USER:
-            console.log('payload', action.payload)
             return {
                 user: action.payload
             }

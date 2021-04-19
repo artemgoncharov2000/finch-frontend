@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react'
-import { StyleSheet, Text, View, Image, Modal, Button, Platform } from 'react-native';
+import { StyleSheet, Text, View, Image, Modal, Button, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import InputField from '../../../components/input_fields/InputField';
 import * as ImagePicker from 'expo-image-picker'
 import { ScrollView } from 'react-native-gesture-handler';
@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import { BASE_URL } from '../../../api/baseURL';
 import User from '../../../interfaces/User';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 
@@ -23,7 +24,7 @@ interface Props {
 }
 
 const EditProfileScreen = (props: Props) => {
-    console.log(props.user.profilePhotoUrl);
+    const insets = useSafeAreaInsets();
     const [user, setUser] = useState({
         profilePhotoUrl: props.user.profilePhotoUrl,
         email: props.user.profilePhotoUrl,
@@ -31,7 +32,30 @@ const EditProfileScreen = (props: Props) => {
         title: props.user.title,
         description: props.user.description
     })
+
+    useEffect(() => {
+        getAccessToDeviceLibrary();
+        getAccessToCamera();
+    }, []);
     
+    const getAccessToDeviceLibrary = async () => {
+        if (Platform.OS !== 'web') {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
+    const getAccessToCamera = async () => {
+        if (Platform.OS !== 'web') {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
     const onChangeEmail = (value: string) => {
         setUser(prevState => ({
             ...prevState,
@@ -103,37 +127,53 @@ const EditProfileScreen = (props: Props) => {
             },
             data: formData
         })
-        .then(response => {
-            const id = response.data.id
-            console.log('url', BASE_URL + '/i/' + id)
-            setUser(prevState => ({
-                ...prevState,
-                profilePhotoUrl: id
-            }))
-        })
-        .catch(error => {console.error(error)});
+            .then(response => {
+                const id = response.data.id
+                console.log('url', BASE_URL + '/i/' + id)
+                setUser(prevState => ({
+                    ...prevState,
+                    profilePhotoUrl: id
+                }))
+            })
+            .catch(error => { console.error(error) });
     }
 
-    React.useLayoutEffect(() => {
-        props.navigation.setOptions({
-            headerRight: () => (
-                <Button
-                    onPress={updateProfile}
-                    title="Save"
-                />
-            ),
-        });
-    }, [props.navigation, user]);
+    const onCancelButtonPress = () => {
+        props.navigation.goBack();
+    }
 
-    const updateProfile = async () => {
-        
-        console.log('user imageUri', user.profilePhotoUrl)
+    const onSaveButtonPress = () => {
+        updateProfile(props.userToken, user)
+            .then(requestStatus => {
+                if (requestStatus == 200) {
+                    props.setUserProfileUrl(user.profilePhotoUrl)
+                    props.setUserDescription(user.description);
+                    props.setUserEmail(user.email);
+                    props.setUserPhone(user.phone);
+                    props.setUserTitle(user.title);
+                    alert('Your profile updated!');
+                    props.navigation.goBack();
+                }
+            })
+    }
 
-        await axios({
+    // React.useLayoutEffect(() => {
+    //     props.navigation.setOptions({
+    //         headerRight: () => (
+    //             <Button
+    //                 onPress={updateProfile}
+    //                 title="Done"
+    //             />
+    //         ),
+    //     });
+    // }, [props.navigation, user]);
+
+    const updateProfile = async (token: string, user: any) => {
+        const request = await axios({
             method: 'PUT',
             url: BASE_URL + '/users/me',
             headers: {
-                authorization: props.userToken
+                authorization: token
             },
             data: {
                 description: user.description,
@@ -143,40 +183,50 @@ const EditProfileScreen = (props: Props) => {
                 profilePhotoUrl: user.profilePhotoUrl
             }
         })
-            .then(response => {
-                console.log(response.data)
-                if (response.data === 'Success') {
-                    props.setUserProfileUrl(user.profilePhotoUrl)
-                    props.setUserDescription(user.description);
-                    props.setUserEmail(user.email);
-                    props.setUserPhone(user.phone);
-                    props.setUserTitle(user.title);
-                    alert('Your profile updated!')
-                }
-            })
+            .then(response => response.status)
             .catch(error => console.error(error));
-
+        return request;
     }
 
     return (
-        <View style={styles.container}>
-            <ScrollView style={{ paddingVertical: 20 }} keyboardDismissMode='interactive'>
-                <View style={{ alignItems: "center", }}>
-                    <Image source={{ uri:  BASE_URL + '/i/' + user.profilePhotoUrl }} style={{ width: 128, height: 128, borderRadius: 90 }} />
-                    <Button title="Change photo" onPress={onChangeProfilePhotoButtonPress} />
-                </View>
-                <Text style={{ fontWeight: "600", fontSize: 17 }}>Username</Text>
-                <InputField value={props.user.username} editable={false} onChangeText={() => { }} />
-                <Text style={{ fontWeight: "600", fontSize: 17 }}>Email</Text>
-                <InputField value={user.email} onChangeText={text => onChangeEmail(text)} />
-                <Text style={{ fontWeight: "600", fontSize: 17 }}>Phone</Text>
-                <InputField value={user.phone} onChangeText={text => onChangePhone(text)} />
-                <Text style={{ fontWeight: "600", fontSize: 17 }}>Title</Text>
-                <InputField value={user.title} onChangeText={text => onChangeTitle(text)} />
-                <Text style={{ fontWeight: "600", fontSize: 17 }}>Description</Text>
-                <InputField value={user.description} onChangeText={text => onChangeDescription(text)} />
-            </ScrollView>
-        </View>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+        >
+            <View
+                style={{
+                    flex: 1,
+                    paddingTop: insets.top
+                }}
+            >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.inner}>
+                        <View style={styles.header}>
+                            <Button title={'Cancel'} onPress={() => onCancelButtonPress()} />
+                            <Button title={'Save'} onPress={() => onSaveButtonPress()} />
+                        </View>
+                        <View style={styles.body} >
+                            <View style={{ alignItems: "center", }}>
+                                <Image source={{ uri: BASE_URL + '/i/' + user.profilePhotoUrl }} style={{ width: 128, height: 128, borderRadius: 90 }} />
+                                <Button title="Change photo" onPress={onChangeProfilePhotoButtonPress} />
+                            </View>
+                            <Text style={{ fontWeight: "600", fontSize: 17 }}>Username</Text>
+                            <InputField value={props.user.username} editable={false} onChangeText={() => { }} />
+                            <Text style={{ fontWeight: "600", fontSize: 17 }}>Email</Text>
+                            <InputField value={user.email} onChangeText={text => onChangeEmail(text)} />
+                            <Text style={{ fontWeight: "600", fontSize: 17 }}>Phone</Text>
+                            <InputField value={user.phone} onChangeText={text => onChangePhone(text)} />
+                            <Text style={{ fontWeight: "600", fontSize: 17 }}>Name</Text>
+                            <InputField value={user.title} onChangeText={text => onChangeTitle(text)} />
+                            <Text style={{ fontWeight: "600", fontSize: 17 }}>Description</Text>
+                            <InputField value={user.description} onChangeText={text => onChangeDescription(text)} />
+                        </View>
+                        <View style={{ flex : 1 }} />
+                    </View>
+                </TouchableWithoutFeedback>
+            </View>
+
+        </KeyboardAvoidingView>
     )
 }
 
@@ -199,10 +249,22 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToProps, mapDispatchToProps)(EditProfileScreen)
 
 const styles = StyleSheet.create({
-    container: {
+    inner: {
         flex: 1,
-        justifyContent: "flex-start",
-        paddingHorizontal: 20
-    }
+        justifyContent: "flex-end",
+    },
+    header: {
+        flex: 1,
+        paddingHorizontal: 10,
+        borderBottomColor: "#A8B0BA",
+        borderBottomWidth: 0.5,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    body: {
 
+        paddingTop: 10,
+        flex: 19,
+        paddingHorizontal: 15
+    }
 })

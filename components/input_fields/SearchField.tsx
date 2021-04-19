@@ -3,7 +3,12 @@ import { StyleSheet, TextInput, View, Image } from 'react-native';
 //@ts-ignore
 import SearchIcon from '../../assets/icons/search-icon.svg'
 
-const SearchField = () => {
+interface Props {
+    onChangeData: (text: string) => void
+}
+
+const SearchField = (props: Props) => {
+
     return (
         <View style={styles.container}>
             <View style={styles.left}>
@@ -13,7 +18,7 @@ const SearchField = () => {
                 <TextInput
                     placeholder="Search"
                     style={styles.text}
-
+                    onChangeText={text => {props.onChangeData(text)}}
                 />
             </View>
 

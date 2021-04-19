@@ -3,7 +3,7 @@ import React, {FC} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import FeedScreen from '../screens/main/feed/FeedScreen';
 import FavoritesScreen from '../screens/main/favorites/FavoritesScreen';
-import ProfileScreen from '../screens/main/profile/ProfileScreen';
+import HomeProfileScreen from '../screens/main/profile/HomeProfileScreen';
 //@ts-ignore 
 import FeedIcon from '../assets/nav/feed-icon.svg'
 //@ts-ignore
@@ -16,10 +16,13 @@ import FavIconFilled from '../assets/nav/favorites-icon-filled.svg'
 import ProfIcon from '../assets/nav/profile-icon.svg'
 //@ts-ignore
 import ProfIconFilled from '../assets/nav/profile-icon-filled.svg'
+import FeedStackNavigator from './Feed/FeedStackNavigator';
+import HomeStackNavigator from './Home/HomeStackNavigator';
+import FavoritesStackNavigator from './Favourites/FavoritesStackNavigator';
 
 const Tab = createBottomTabNavigator()
 
-const MainStackNavigator: FC = () => {
+const TabNavigator: FC = ({route, navigation}) => {
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -45,12 +48,12 @@ const MainStackNavigator: FC = () => {
                 inactiveTintColor: 'gray',
             }}
         >
-            <Tab.Screen name="Feed" component={FeedScreen}/>
-            <Tab.Screen name="Favorites" component={FavoritesScreen}/>
-            <Tab.Screen name="Profile" component={ProfileScreen}/>
+            <Tab.Screen name="Feed" component={FeedStackNavigator}/>
+            <Tab.Screen name="Favorites" component={FavoritesStackNavigator}/>
+            <Tab.Screen name="Profile" component={HomeStackNavigator}/>
         </Tab.Navigator>
         
     );
 }
-export default MainStackNavigator
+export default TabNavigator
 

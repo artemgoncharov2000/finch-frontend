@@ -1,54 +1,59 @@
 import React, { FC, useState } from 'react';
-import { Button } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
 import EditProfileScreen from '../screens/main/profile/EditProfileScreen';
-import UsersList from '../screens/main/profile/UsersList'
+import UsersListScreen from '../screens/main/profile/UsersListScreen'
 import ProfileOptionsScreen from '../screens/main/profile/ProfileOptionsScreen';
+import { connect } from 'react-redux';
+import userReducer from '../redux/reducers/userReducer';
+import HomeProfileScreen from '../screens/main/profile/HomeProfileScreen';
+import UserProfileScreen from '../screens/main/user/UserProfileScreen';
 
 
-const ProfileStackNavigator = ({ route, navigation }) => {
-  const CreateStack = createStackNavigator();
-  const { destination } = route.params;
-  console.log(destination)
+const ProfileStackNavigator = ({ username, user, route, navigation }) => {
+  const ProfileStack = createStackNavigator();
   return (
-    <CreateStack.Navigator initialRouteName={destination}>
-      <CreateStack.Screen
-        name="ProfileDetails"
-        component={EditProfileScreen}
-        options={({ navigation, route }) => ({
-          headerBackTitle: "Back",
-          headerTitle: "Details"
-        })}
-      />
-      <CreateStack.Screen 
-        name="ProfileOptions"
-        component={ProfileOptionsScreen}
-        options={({ navigation, route }) => ({
-          headerBackTitle: "Back",
-          headerTitle: "Options"
-        })}
-      />
-      <CreateStack.Screen
+    <ProfileStack.Navigator
+      headerMode="none"
+    >
+      {
+        username == 'me' || username === user.username
+        ?
+        <ProfileStack.Screen name="Profile">
+          {({navigation}) => <HomeProfileScreen navigation={navigation} username={username}/>}
+        </ProfileStack.Screen>
+        :
+        <ProfileStack.Screen name="Profile">
+          {({navigation}) => <UserProfileScreen navigation={navigation} username={username}/>}
+        </ProfileStack.Screen>
+      }
+      <ProfileStack.Screen
         name="Subscribers"
         options={({ navigation, route }) => ({
           headerBackTitle: "Back",
           headerTitle: "Subscribers"
         })}
       >
-        {() => <UsersList type='Subscribers' />}
-      </CreateStack.Screen>
-      <CreateStack.Screen
+        {({navigation, route}) => <UsersListScreen type='Subscribers' navigation={navigation} route={route} username={username} />}
+      </ProfileStack.Screen>
+      <ProfileStack.Screen
         name="Subscriptions"
         options={({ navigation, route }) => ({
           headerBackTitle: "Back",
           headerTitle: "Subscriptions"
         })}
       >
-        {() => <UsersList type='Subscriptions' />}
-      </CreateStack.Screen>
+        {({navigation, route}) => <UsersListScreen type='Subscriptions' navigation={navigation} route={route} username={username} />}
+      </ProfileStack.Screen>
 
-    </CreateStack.Navigator>
+    </ProfileStack.Navigator>
 
   );
 };
-export default ProfileStackNavigator
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.userReducer.user
+  }
+}
+
+export default connect(mapStateToProps, null)(ProfileStackNavigator);

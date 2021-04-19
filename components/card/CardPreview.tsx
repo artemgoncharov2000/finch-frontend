@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import AutoHeightImage from 'react-native-auto-height-image';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { BASE_URL } from '../../api/baseURL';
-import { getCardById} from '../../api/card/cardRequests';
+import { getCardByGuideId } from '../../api/card/cardRequests';
 import { Card } from '../../interfaces/Card';
 
 interface Props {
@@ -17,17 +18,26 @@ const CardPreview = (props: Props) => {
 
     useEffect(() => {
         console.log('CardId', props.cardId)
-        getCardById(props.userToken, props.cardId)
-        .then((card: Card) => {
-            setCard(card)
-        })
+        getCardByGuideId(props.userToken, props.cardId)
+            .then((card: Card) => {
+                setCard(card)
+            })
         console.log('content card', card?.content)
     }, [])
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={() => {props.navigation.navigate('CardView', {content: card?.content})}}>
-                <Image style={styles.image} source={{uri: BASE_URL + '/i/' + card?.thumbnailUrl}}/>
+            <TouchableOpacity onPress={() => { props.navigation.push('GuideStack', { screen: 'Card', params: { content: card?.content, title: card?.title } }) }}>
+                <AutoHeightImage
+                    style={{
+                        
+                        borderTopLeftRadius: 15,
+                        borderTopRightRadius: 15
+                    }}
+                    width={Dimensions.get('window').width - 40}
+                    source={{ uri: BASE_URL + '/i/' + card?.thumbnailUrl }}
+                    
+                />
                 <Text style={styles.title}>{card?.title}</Text>
             </TouchableOpacity>
         </View>
@@ -52,14 +62,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 15
     },
-    image: {
-        height: 180,
-        width: 375,
-        borderTopLeftRadius: 15,
-        borderTopRightRadius: 15
-    },
+
     title: {
-        
+
         fontSize: 24,
         fontWeight: "600",
         color: "black",

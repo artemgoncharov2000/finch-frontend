@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, View, Text, Image } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet, View, Text, Image, Button, Dimensions } from 'react-native';
+import AutoHeightImage from 'react-native-auto-height-image';
+import { FlatList, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BASE_URL } from '../../../api/baseURL';
-
+//@ts-ignore
+import BackButtonIcon from '../../../assets/icons/back-button-icon.svg';
+import BackButton from '../../../components/buttons/BackButton';
 
 const CardViewScreen = (props) => {
     const [content, setContent] = useState([])
+    const [title, setTitle] = useState('');
     const insets = useSafeAreaInsets();
 
-    
+
 
     useEffect(() => {
-        const data = props.props.route.params.content;
 
-        setContent(data);
-        console.log('content', content);
+        const content = props.props.route.params.content;
+        const title = props.props.route.params.title;
+
+        setContent(content);
+        setTitle(title);
+
     }, [])
 
     return (
@@ -24,9 +31,15 @@ const CardViewScreen = (props) => {
             paddingTop: insets.top,
             backgroundColor: '#fff'
         }}>
-            <ScrollView>
-                {
-                    content.map((item, index) => {
+            <View style={styles.header}>
+                <BackButton navigation={props.props.navigation} color="#000" />
+                <Text style={styles.headerTitle}>{title}</Text>
+            </View>
+            <View>
+                <FlatList
+                    showsVerticalScrollIndicator={false}
+                    data={content}
+                    renderItem={({ item, index }) => {
                         if (item.type === 'text')
                             return (
                                 <View key={index} style={styles.textItemContainer}>
@@ -36,12 +49,18 @@ const CardViewScreen = (props) => {
                         else
                             return (
                                 <View key={index} style={styles.imageItemContainer}>
-                                    <Image style={styles.imageItem} source={{ uri: BASE_URL + '/i/' + item.value }} />
+                                    <AutoHeightImage
+
+                                        source={{ uri: BASE_URL + '/i/' + item.value }}
+                                        width={Dimensions.get('window').width - 20}
+                                    />
                                 </View>
                             )
-                    })
-                }
-            </ScrollView>
+                    }}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+                
+            </View>
         </View>
     )
 }
@@ -49,21 +68,30 @@ const CardViewScreen = (props) => {
 export default CardViewScreen;
 
 const styles = StyleSheet.create({
-    textItemContainer: {
+    header: {
+        // backgroundColor: 'red',
+        alignItems: 'center',
+
         paddingVertical: 5,
+        paddingHorizontal: 5,
+        flexDirection: 'row'
+        
+    },
+    headerTitle: {
+        paddingHorizontal: 5,
+        fontSize: 30,
+        fontWeight: '700',
+        
+    },
+    textItemContainer: {
+        paddingVertical: 10,
         paddingHorizontal: 10,
     },
     textItem: {
-        
-        fontSize: 17
+        fontSize: 18
     },
     imageItemContainer: {
-        paddingVertical: 5,
+        paddingBottom: 10,
         paddingHorizontal: 10,
     },
-    imageItem: {
-
-        height: 180,
-        width: 395
-    }
 })

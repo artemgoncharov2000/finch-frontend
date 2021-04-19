@@ -6,7 +6,7 @@ interface User{
     password: string,
     username: string
 }
-export async function SignUpUser(user: User){
+export async function signUpUser(user: User){
     const request = await axios({
         method: 'POST',
         url: BASE_URL + "/auth/register",
@@ -28,7 +28,7 @@ export async function SignUpUser(user: User){
     return request;
 }
 
-export async function SignInUser(user: User){
+export async function signInUser(user: User){
     
     const request = await axios({
         method: 'POST',
@@ -45,4 +45,18 @@ export async function SignInUser(user: User){
     .catch(error => console.log(error));
 
     return request;
+}
+
+export async function checkUserToken(userToken: string) {
+    const request = await axios({
+        method: 'GET',
+        url: BASE_URL + "/auth/check",
+        headers: {
+            authorization: userToken
+        } 
+    })
+    .then(response => 'OK')
+    .catch(err => 'Fail')
+
+    return request
 }
