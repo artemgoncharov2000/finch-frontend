@@ -1,13 +1,13 @@
 # finch-frontend
 
-1. Откройте папку с проектом в командной строке
-2. Введите следующую команду
+1. Open project directory in console
+2. Enter the following command 
 ```
   yarn
 ```
-3. После того, как yarn подгрузит все необходимые библиотеки введите 
+3. After write this command
 ```
 yarn ios
 ```
 
-Лучше всего приложение работает на эмуляторе iPhone 11!!!
+The best experience of use is on iPhone 11!!!
