@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { View, StyleSheet, Dimensions, Text } from 'react-native';
-import {TextInput, TouchableOpacity} from 'react-native-gesture-handler'
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
 
-const {height, width} = Dimensions.get('screen');
+const { height, width } = Dimensions.get('screen');
 
 interface Props {
     title: string,
@@ -11,12 +11,10 @@ interface Props {
 }
 
 const DefaultButton: FC<Props> = (props) => {
-    return(
-        <View style={styles.container}>
-            <TouchableOpacity  onPress={props.onPress}>
-                <Text style={styles.text}>{props.title}</Text>
-            </TouchableOpacity>
-        </View>
+    return (
+        <TouchableOpacity style={styles.container} onPress={props.onPress}>
+            <Text style={styles.text}>{props.title}</Text>
+        </TouchableOpacity>
     )
 }
 
@@ -28,9 +26,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#007AFF',
         alignItems: 'center',
         justifyContent: 'center',
-       
+
         borderRadius: 14,
-        
+
     },
     text: {
         fontWeight: "600",

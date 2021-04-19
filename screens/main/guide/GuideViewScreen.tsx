@@ -22,7 +22,7 @@ const GuideViewScreen = (props) => {
 
         getGuideById(props.userToken, guideId)
             .then(data => {
-                console.log('guide data', data);
+            
                 const date = new Date(data.travelDate)
                 setGuide({
                     title: data.title,

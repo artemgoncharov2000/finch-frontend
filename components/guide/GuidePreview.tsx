@@ -121,13 +121,10 @@ const GuidePreview: FC<Props> = (props) => {
     return (
 
         <View style={styles.container}>
-
             <TouchableOpacity style={styles.header} onPress={() => {props.navigation.push('ProfileStack', { params: { username: props.username } }) }}>
                 <Image style={styles.profilePhoto} source={{ uri: BASE_URL + '/i/' + props.profilePhotoUrl }} />
                 <View style={styles.headerInfoContainer}>
-
                     <Text style={styles.usernameText}>{props.username}</Text>
-
                     <Text style={styles.dateText}>{guide.created}</Text>
                 </View>
 
