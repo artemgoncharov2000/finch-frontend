@@ -1,36 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import {createSwitchNavigator, createAppContainer, StackRouter} from 'react-navigation'
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-
-import Login from './screens/auth/login/Login'
-import Signup from './screens/auth/signup/Signup';
-import  HomeScreen  from './screens/HomeScreen';
+import React, { FC, useState } from 'react';
+import { Provider } from 'react-redux';
+import configureStore from './redux/store'
+import RootStackNavigator from './navigation/RootStackNavigator';
 
 
+const store = configureStore;
 
-const Stack = createStackNavigator();
-
-export default function App() {
+const App = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login" headerMode="none">
-        <Stack.Screen name="Login" component={Login}/>
-        <Stack.Screen name="HomeScreen" component={HomeScreen}/>
-      </Stack.Navigator>
-    </NavigationContainer>
-    
+    <Provider store={store()}>
+      <RootStackNavigator/>
+    </Provider>
   );
 };
+export default App
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
