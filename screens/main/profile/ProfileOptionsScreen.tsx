@@ -66,7 +66,8 @@ const styles = StyleSheet.create({
     },
     headerLeftItem: {
         flex: 1,
-        backgroundColor: 'red',
+        justifyContent: 'flex-start',
+        alignContent: 'center'
         
     },
     headerItem: {

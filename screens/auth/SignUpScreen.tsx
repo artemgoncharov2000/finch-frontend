@@ -1,14 +1,10 @@
 import React, { FC, useState } from 'react'
-import {StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import DefaultButton from '../../components/buttons/DefaultButton'
 import InputField from '../../components/input_fields/InputField';
 //@ts-ignore 
 import FinchIcon from './../../assets/finch-logo.svg'
-import axios from 'axios';
-import { MMKV } from 'react-native-mmkv';
-import { BASE_URL } from '../../api/baseURL';
-import { ScrollView } from 'react-native-gesture-handler';
-import {signInUser, signUpUser} from '../../api/auth/authentification'
+import { signInUser, signUpUser } from '../../api/auth/authentification'
 import { signIn } from '../../redux/actions/tokenActions';
 import { connect } from 'react-redux';
 import LocalStorage from '../../local_storage/LocalStorage';
@@ -53,48 +49,51 @@ const SignUpScreen: FC<Props> = (props) => {
 
     const onSignUpButtonPress = () => {
         signUpUser(user)
-        .then(result => {
-            console.log('result ', result)
-            if (result === 'Success') {
-                console.log(result)
-                signInUser(user)
-                .then(userToken => {
-                    console.log(userToken);
-                    LocalStorage.save('userToken', userToken);
-                    props.signIn(userToken);
-                })
+            .then(result => {
+                console.log('result ', result)
+                if (result === 'Success') {
+                    console.log(result)
+                    signInUser(user)
+                        .then(userToken => {
+                            console.log(userToken);
+                            LocalStorage.save('userToken', userToken);
+                            props.signIn(userToken);
+                        })
 
-            } else if (result) {
-                alert('Something goes wrong!');
-            }
-        })
-        .catch(err => console.error(err))
+                } else if (result) {
+                    alert('Something goes wrong!');
+                }
+            })
+            .catch(err => console.error(err))
     }
 
 
-    return(
+    return (
         <View style={styles.container}>
-            
-            <View style={styles.titleView}>
-                <FinchIcon/>
-                <Text style={styles.title}>Sign Up</Text>
-                <Text style={styles.subTitle}>With your account, {"\n"} you can save interesting travel guides!</Text>
-            </View>
-            <View style={styles.inputView}>
-                <InputField placeholder="Username" secureTextEntry={false} onChangeText={text => onUsernameChange(text)}/>
-                <InputField placeholder="Email" secureTextEntry={false} onChangeText={text => onEmailChange(text)}/>
-                <InputField placeholder="Password" secureTextEntry={true} onChangeText={text => onPasswordChange(text)}/>
-            </View>
-            <View style={styles.buttonView}>
-                <DefaultButton 
-                    title="Sign Up" 
-                    onPress={onSignUpButtonPress}
-                />
-                <View style={styles.loginContainer}>
-                    <Text style={styles.loginText}>Have an account?</Text>
-                    <Button title="Sign in" onPress={()=>{props.navigation.navigate('SignIn')}} />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.body}>
+                    <View style={styles.titleView}>
+                        <FinchIcon />
+                        <Text style={styles.title}>Sign Up</Text>
+                        <Text style={styles.subTitle}>With your account, {"\n"} you can save interesting travel guides!</Text>
+                    </View>
+                    <View style={styles.inputView}>
+                        <InputField placeholder="Username" secureTextEntry={false} onChangeText={text => onUsernameChange(text)} />
+                        <InputField placeholder="Email" secureTextEntry={false} onChangeText={text => onEmailChange(text)} />
+                        <InputField placeholder="Password" secureTextEntry={true} onChangeText={text => onPasswordChange(text)} />
+                    </View>
+                    <View style={styles.buttonView}>
+                        <DefaultButton
+                            title="Sign Up"
+                            onPress={onSignUpButtonPress}
+                        />
+                        <View style={styles.loginContainer}>
+                            <Text style={styles.loginText}>Have an account?</Text>
+                            <Button title="Sign in" onPress={() => { props.navigation.navigate('SignIn') }} />
+                        </View>
+                    </View>
                 </View>
-            </View>
+            </TouchableWithoutFeedback>
         </View>
     );
 }
@@ -109,10 +108,13 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: 'white',
         flex: 1,
-        justifyContent: 'center',
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
+        justifyContent: 'flex-end',
     },
-    
+    body: {
+        flex: 1,
+        
+    },
     titleView: {
         flex: 4,
         justifyContent: 'center',
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        
+
     },
     loginText: {
         color: "grey"

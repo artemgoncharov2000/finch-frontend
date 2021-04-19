@@ -50,32 +50,34 @@ const SignInScreen = (props) => {
     }
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        <View
+            // behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.container}
         >
-            {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}> */}
-            <View style={styles.titleView}>
-                <FinchIcon />
-                <Text style={styles.title}>Sign In</Text>
-                <Text style={styles.subTitle}>Welcome, adventures are waiting for you!</Text>
-            </View>
-            <View style={styles.inputView}>
-                <InputField placeholder="Nickname" secureTextEntry={false} onChangeText={text => onUsernameChange(text)} />
-                <InputField placeholder="Password" secureTextEntry={true} onChangeText={text => onPasswordChange(text)} />
-            </View>
-            <View style={styles.buttonView}>
-                <DefaultButton
-                    title="Sign in"
-                    onPress={() => onSignInButtonPress()}
-                />
-                <View style={styles.signupContainer}>
-                    <Text style={styles.signupText}>No account?</Text>
-                    <Button title="Sign Up" onPress={() => { props.navigation.navigate('SignUp') }} />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.body}>
+                    <View style={styles.titleView}>
+                        <FinchIcon />
+                        <Text style={styles.title}>Sign In</Text>
+                        <Text style={styles.subTitle}>Welcome, adventures are waiting for you!</Text>
+                    </View>
+                    <View style={styles.inputView}>
+                        <InputField placeholder="Nickname" secureTextEntry={false} onChangeText={text => onUsernameChange(text)} />
+                        <InputField placeholder="Password" secureTextEntry={true} onChangeText={text => onPasswordChange(text)} />
+                    </View>
+                    <View style={styles.buttonView}>
+                        <DefaultButton
+                            title="Sign in"
+                            onPress={() => onSignInButtonPress()}
+                        />
+                        <View style={styles.signupContainer}>
+                            <Text style={styles.signupText}>No account?</Text>
+                            <Button title="Sign Up" onPress={() => { props.navigation.navigate('SignUp') }} />
+                        </View>
+                    </View>
                 </View>
-            </View>
-            {/* </TouchableWithoutFeedback> */}
-        </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+        </View>
     );
 }
 
@@ -99,6 +101,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
         paddingHorizontal: 20
+    },
+    body: {
+        flex: 1
     },
     titleView: {
         flex: 4,
