@@ -9,7 +9,8 @@ import { Card } from '../../interfaces/Card';
 
 interface Props {
     cardId: string
-    userToken: string
+    userToken: string,
+    navigation: any
 }
 
 const CardPreview = (props: Props) => {

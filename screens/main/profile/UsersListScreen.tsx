@@ -127,6 +127,7 @@ const styles = StyleSheet.create({
     },
     headerRightItem: {
         flex: 1,
+        marginRight: 10
         // backgroundColor: 'yellow'
     },
     body: {

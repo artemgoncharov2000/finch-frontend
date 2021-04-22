@@ -4,6 +4,7 @@ import HomeProfileScreen from '../../screens/main/profile/HomeProfileScreen';
 import ProfileStackNavigator from '../ProfileStackNavigator';
 import { TabRouter } from '@react-navigation/routers';
 import GuideStackNavigator from '../GuideStackNavigator';
+import ReportScreen from '../../screens/main/report/ReportScreen';
 
 const HomeStackNavigator = ({route, navigation}) => {
     const HomeStack = createStackNavigator();
@@ -14,6 +15,9 @@ const HomeStackNavigator = ({route, navigation}) => {
         >
             <HomeStack.Screen name="ProfileStack">
                 {()=> <ProfileStackNavigator username="me" route={route} navigation={navigation}/>}
+            </HomeStack.Screen>
+            <HomeStack.Screen name="Report">
+                {({navigation, route}) => {return <ReportScreen navigation={navigation} route={route}/>}}
             </HomeStack.Screen>
             <HomeStack.Screen name="GuideStack" component={GuideStackNavigator}/>
         </HomeStack.Navigator>

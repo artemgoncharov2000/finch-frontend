@@ -10,10 +10,13 @@ const GuideStackNavigator = (props) => {
             headerMode="none"
         >
             <GuideStack.Screen name="Guide">
-                {() => <GuideViewScreen props={props}/>}
+                {({navigation, route}) => {
+                    console.log(route);
+                    return <GuideViewScreen navigation={navigation} route={route}/>
+                }}
             </GuideStack.Screen>
             <GuideStack.Screen name="Card">
-                {(data) => <CardViewScreen props={data}/>}
+                {({navigation, route}) => <CardViewScreen navigation={navigation} route={route}/>}
             </GuideStack.Screen>
         </GuideStack.Navigator>
     )

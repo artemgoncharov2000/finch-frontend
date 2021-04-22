@@ -12,17 +12,14 @@ import { connect } from 'react-redux';
 import Tag from '../../../components/tag/Tag';
 
 const GuideViewScreen = (props) => {
-
     const [guide, setGuide] = useState()
     const [cards, setCards] = useState<Card[]>()
    
     useEffect(() => {
 
-        const guideId = props.props.route.params.guideId;
-
+        const guideId = props.route.params.guideId;
         getGuideById(props.userToken, guideId)
             .then(data => {
-            
                 const date = new Date(data.travelDate)
                 setGuide({
                     title: data.title,
@@ -35,8 +32,6 @@ const GuideViewScreen = (props) => {
                     tags: data.tags 
                 })
             })
-
-
         getListOfCardsByGuideId(props.userToken, guideId)
             .then(cards => {
                 setCards(cards)
@@ -49,7 +44,7 @@ const GuideViewScreen = (props) => {
             <ScrollView>
                 <View style={styles.imageContainer}>
                     <View style={styles.backButton}>
-                        <BackButton navigation={props.props.navigation} color="#fff" />
+                        <BackButton navigation={props.navigation} color="#fff" />
                     </View>
                     <Image style={{ height: 256, width: 415 }} source={{ uri: BASE_URL + '/i/' + guide?.thumbnailUrl }} />
                 </View>
@@ -89,7 +84,7 @@ const GuideViewScreen = (props) => {
                 <View style={styles.cardsContainer}>
                     {cards?.map((card, index) => {
                         return (
-                            <CardPreview cardId={card.id} key={index} navigation={props.props.navigation} />
+                            <CardPreview cardId={card.id} key={index} navigation={props.navigation} />
                         );
                     })}
                 </View>

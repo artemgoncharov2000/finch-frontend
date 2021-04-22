@@ -44,7 +44,7 @@ const FavoritesScreen = (props) => {
                             navigation={props.navigation}
                             username={item.username} 
                             guideId={item.id} 
-                            onPress={() => props.navigation.navigate('GuideStack', {screen: 'Guide', guideId: item.id })} 
+                            onPress={() => props.navigation.navigate('GuideStack', {screen: 'Guide', params: {guideId: item.id }})} 
                         />
                     }}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}

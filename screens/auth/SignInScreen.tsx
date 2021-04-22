@@ -48,7 +48,7 @@ const SignInScreen = (props) => {
                     props.signIn(userToken)
                 }
             })
-            .catch(error => alert('Something goes wrong!'))
+            
     }
 
     return (

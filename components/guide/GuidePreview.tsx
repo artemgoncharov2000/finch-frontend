@@ -13,7 +13,7 @@ import LikeIcon from '../../assets/icons/like-icon.svg';
 //@ts-ignore
 import LikeIconFilled from '../../assets/icons/like-icon-filled.svg';
 //@ts-ignore
-import MessageIcon from '../../assets/icons/message-icon.svg';
+import ReportIcon from '../../assets/icons/report-icon.svg';
 //@ts-ignore
 import FavoritesIcon from '../../assets/icons/favorites-icon.svg';
 //@ts-ignore
@@ -121,14 +121,35 @@ const GuidePreview: FC<Props> = (props) => {
     return (
 
         <View style={styles.container}>
-            <TouchableOpacity style={styles.header} onPress={() => {props.navigation.push('ProfileStack', { params: { username: props.username } }) }}>
-                <Image style={styles.profilePhoto} source={{ uri: BASE_URL + '/i/' + props.profilePhotoUrl }} />
-                <View style={styles.headerInfoContainer}>
-                    <Text style={styles.usernameText}>{props.username}</Text>
-                    <Text style={styles.dateText}>{guide.created}</Text>
+
+            <View style={styles.header} >
+                <View style={{
+                    flex: 5,
+                    flexDirection: 'row',
+                    // backgroundColor: 'red'
+                }}
+                >
+                    <TouchableOpacity style={{ flexDirection: 'row' }} onPress={() => { props.navigation.push('ProfileStack', { params: { username: props.username } }) }}>
+                        <Image style={styles.profilePhoto} source={{ uri: BASE_URL + '/i/' + props.profilePhotoUrl }} />
+                        <View style={styles.headerInfoContainer}>
+                            <Text style={styles.usernameText}>{props.username}</Text>
+                            <Text style={styles.dateText}>{guide.created}</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
 
-            </TouchableOpacity>
+                <View style={{
+                    // backgroundColor: 'yellow',
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'flex-end'
+                }}>
+                    <TouchableOpacity onPress={() => { props.navigation.push('Report', { guideId: props.guideId }) }}>
+                        <ReportIcon width={20} height={20} fill="#6C7889" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+
             <View>
                 <TouchableOpacity onPress={props.onPress}>
                     <AutoHeightImage
@@ -222,7 +243,8 @@ const styles = StyleSheet.create({
 
     },
     headerInfoContainer: {
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
+
     },
     usernameText: {
         fontWeight: '600',
@@ -231,13 +253,6 @@ const styles = StyleSheet.create({
     dateText: {
         color: "#6C7889",
         fontSize: 15
-    },
-
-    tagsContainer: {
-
-    },
-    textContainer: {
-
     },
     title: {
         fontStyle: 'normal',
@@ -267,6 +282,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     text: {
-        color: '#6C7889'
+        color: '#6C7889',
+        fontSize: 17,
+        paddingLeft: 5
     }
 })

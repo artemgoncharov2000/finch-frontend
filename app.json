@@ -18,7 +18,7 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.finch.artemgoncharov",
+      "bundleIdentifier": "su.brf.apps.finch",
       "buildNumber": "1.0.0"
     },
     "android": {

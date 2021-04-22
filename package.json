@@ -30,6 +30,7 @@
     "react-native-gesture-handler": "^1.9.0",
     "react-native-mmkv": "^1.0.6",
     "react-native-mmkv-storage": "^0.5.3",
+    "react-native-radio-buttons-group": "^2.2.1",
     "react-native-reanimated": "^1.13.2",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.17.1",

@@ -169,7 +169,7 @@ const HomeProfileScreen = (props: Props) => {
                         }
                         data={guides}
                         renderItem={({ item, index }) => {
-                            return <GuidePreview navigation={props.navigation} username={props.user?.username} profilePhotoUrl={props.user?.profilePhotoUrl} guideId={item} onPress={() => props.navigation.push('GuideStack', { guideId: item })} />
+                            return <GuidePreview navigation={props.navigation} username={props.user?.username} profilePhotoUrl={props.user?.profilePhotoUrl} guideId={item} onPress={() => props.navigation.push('GuideStack', {screen: 'Guide', params: {guideId: item }})} />
                         }}
                         keyExtractor={(item, index) => index.toString()}
                         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

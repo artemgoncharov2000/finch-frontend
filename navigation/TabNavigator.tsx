@@ -16,9 +16,15 @@ import FavIconFilled from '../assets/nav/favorites-icon-filled.svg'
 import ProfIcon from '../assets/nav/profile-icon.svg'
 //@ts-ignore
 import ProfIconFilled from '../assets/nav/profile-icon-filled.svg'
+//@ts-ignore
+import SearchIcon from '../assets/icons/search-icon-1.svg';
+//@ts-ignore
+import SearchIconFilled from '../assets/icons/search-icon-filled.svg';
 import FeedStackNavigator from './Feed/FeedStackNavigator';
 import HomeStackNavigator from './Home/HomeStackNavigator';
 import FavoritesStackNavigator from './Favourites/FavoritesStackNavigator';
+import SearchScreen from '../screens/main/search/SearchScreen';
+import SearchStackNavigator from './Search/SearchStackNavigator';
 
 const Tab = createBottomTabNavigator()
 
@@ -31,7 +37,11 @@ const TabNavigator: FC = ({route, navigation}) => {
                     return (
                         focused ? <FeedIconFilled fill="#000" width="26" height="26"/> : <FeedIcon fill="#000" width="26" height="26"/>
                     );
-                } else if (route.name === 'Favorites') {
+                } else if (route.name === 'Search') {
+                    return (
+                        focused ? <SearchIconFilled fill="#000"  width="26" height="26"/> : <SearchIcon fill="#000"  width="26" height="26"/>
+                    );
+                }else if (route.name === 'Favorites') {
                     return (
                         focused ? <FavIconFilled fill="#000"  width="26" height="26"/> : <FavIcon fill="#000"  width="26" height="26"/>
                     );
@@ -49,6 +59,7 @@ const TabNavigator: FC = ({route, navigation}) => {
             }}
         >
             <Tab.Screen name="Feed" component={FeedStackNavigator}/>
+            <Tab.Screen name="Search" component={SearchStackNavigator}/>
             <Tab.Screen name="Favorites" component={FavoritesStackNavigator}/>
             <Tab.Screen name="Profile" component={HomeStackNavigator}/>
         </Tab.Navigator>

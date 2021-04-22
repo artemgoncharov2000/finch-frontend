@@ -37,7 +37,7 @@ const EditProfileScreen = (props: Props) => {
         getAccessToDeviceLibrary();
         getAccessToCamera();
     }, []);
-    
+
     const getAccessToDeviceLibrary = async () => {
         if (Platform.OS !== 'web') {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -87,11 +87,14 @@ const EditProfileScreen = (props: Props) => {
     const onChangeProfilePhotoButtonPress = () => {
         pickImage()
             .then(uri => {
-                uploadImage(props.userToken, uri)
-                setUser(prevState => ({
-                    ...prevState,
-                    profilePhotoUrl: uri
-                }))
+                if (uri) {
+                    uploadImage(props.userToken, uri)
+                    setUser(prevState => ({
+                        ...prevState,
+                        profilePhotoUrl: uri
+                    }))
+
+                }
 
             })
     }
@@ -221,7 +224,7 @@ const EditProfileScreen = (props: Props) => {
                             <Text style={{ fontWeight: "600", fontSize: 17 }}>Description</Text>
                             <InputField value={user.description} onChangeText={text => onChangeDescription(text)} />
                         </View>
-                        <View style={{ flex : 1 }} />
+                        <View style={{ flex: 1 }} />
                     </View>
                 </TouchableWithoutFeedback>
             </View>

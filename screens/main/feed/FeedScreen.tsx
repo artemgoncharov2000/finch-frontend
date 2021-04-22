@@ -47,9 +47,9 @@ const FeedScreen: FC<Props> = (props) => {
             >
                 {/* <SearchField /> */}
                 <Text style={styles.headerTitle}>Feed</Text>
-                <TouchableOpacity onPress={() => props.navigation.navigate('Search')}>
+                {/* <TouchableOpacity onPress={() => props.navigation.navigate('Search')}>
                     <SearchIcon fill="#000" width="28" height="28"/>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
             <View style={styles.body}>
                 <FlatList
@@ -61,7 +61,7 @@ const FeedScreen: FC<Props> = (props) => {
                             navigation={props.navigation}
                             username={item.username} 
                             guideId={item.id} 
-                            onPress={() => props.navigation.push('GuideStack', {screen: 'Guide', guideId: item.id })} 
+                            onPress={() => props.navigation.push('GuideStack', {screen: 'Guide', params:  {guideId: item.id}})} 
                         />
                     }}
                     keyExtractor={(item, index) => index.toString()}
@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         paddingHorizontal: 20,
         borderBottomColor: "#A8B0BA",
         borderBottomWidth: 0.5

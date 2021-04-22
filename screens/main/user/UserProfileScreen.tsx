@@ -165,7 +165,7 @@ const UserProfileScreen = (props: Props) => {
                                     }
                                     data={guides}
                                     renderItem={({ item, index }) => {
-                                        return <GuidePreview navigation={props.navigation} username={user?.username} profilePhotoUrl={user?.profilePhotoUrl} guideId={item} onPress={() => props.navigation.push('GuideStack', { guideId: item })} />
+                                        return <GuidePreview navigation={props.navigation} username={user?.username} profilePhotoUrl={user?.profilePhotoUrl} guideId={item} onPress={() => props.navigation.push('GuideStack', {screen: 'Guide', params: {guideId: item }})} />
                                     }}
                                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
                                     keyExtractor={(item, index) => index.toString()}

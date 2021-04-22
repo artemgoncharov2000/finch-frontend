@@ -17,8 +17,8 @@ const CardViewScreen = (props) => {
 
     useEffect(() => {
 
-        const content = props.props.route.params.content;
-        const title = props.props.route.params.title;
+        const content = props.route.params.content;
+        const title = props.route.params.title;
 
         setContent(content);
         setTitle(title);
@@ -32,7 +32,7 @@ const CardViewScreen = (props) => {
             backgroundColor: '#fff'
         }}>
             <View style={styles.header}>
-                <BackButton navigation={props.props.navigation} color="#000" />
+                <BackButton navigation={props.navigation} color="#000" />
                 <Text style={styles.headerTitle}>{title}</Text>
             </View>
             <View>

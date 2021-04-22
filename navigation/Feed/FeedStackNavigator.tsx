@@ -5,7 +5,8 @@ import FeedScreen from '../../screens/main/feed/FeedScreen';
 
 import ProfileStackNavigator from '../ProfileStackNavigator';
 import GuideStackNavigator from '../GuideStackNavigator';
-import SearchScreen from '../../screens/main/feed/SearchScreen';
+import SearchScreen from '../../screens/main/search/SearchScreen';
+import ReportScreen from '../../screens/main/report/ReportScreen';
 
 const FeedStackNavigator = (props) => {
     const FeedStack = createStackNavigator();
@@ -15,8 +16,12 @@ const FeedStackNavigator = (props) => {
             headerMode="none"
         >
             <FeedStack.Screen name="FeedScreen" component={FeedScreen}/>  
-            <FeedStack.Screen name="Search" component={SearchScreen}/>
-            <FeedStack.Screen name="GuideStack" component={GuideStackNavigator}/>
+            <FeedStack.Screen name="Report">
+                {({navigation, route}) => {return <ReportScreen navigation={navigation} route={route}/>}}
+            </FeedStack.Screen>
+            <FeedStack.Screen name="GuideStack">
+                {({navigation, route}) => <GuideStackNavigator navigation={navigation} route={route}/>}
+            </FeedStack.Screen>
             <FeedStack.Screen name="ProfileStack">
                 {({navigation, route}) => { return <ProfileStackNavigator navigation={navigation} username={route.params?.params.username}/>}}
             </FeedStack.Screen>
