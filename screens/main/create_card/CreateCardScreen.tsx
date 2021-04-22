@@ -32,12 +32,7 @@ const CreateCardScreen = (props) => {
         }))
     }
 
-    const onChangeLocation = (text: string) => {
-        setCard(prevState => ({
-            ...prevState,
-            location: text
-        }))
-    }
+    
 
     const onAddTextButtonPress = () => {
         setCard(prevState => ({
@@ -49,21 +44,24 @@ const CreateCardScreen = (props) => {
     const onAddImageButtonPress = () => {
         pickImage()
             .then(uri => {
-                uploadImage(props.userToken, uri)
+                if (uri) {
+                    uploadImage(props.userToken, uri)
                     .then(id => {
                         setCard(prevState => ({
                             ...prevState,
                             content: prevState.content.concat([{ type: "image", value: id }])
                         }))
                     })
-
+                }
+                
             })
     }
 
     const onPreviewImageButtonPress = () => {
         pickImage()
             .then(uri => {
-                uploadImage(props.userToken, uri)
+                if (uri) {
+                    uploadImage(props.userToken, uri)
                     .then(id => {
                         console.log("imageId", id)
                         setCard(prevState => ({
@@ -71,6 +69,8 @@ const CreateCardScreen = (props) => {
                             thumbnailUrl: id
                         }));
                     });
+                }
+                
             })
     }
 
@@ -122,8 +122,8 @@ const CreateCardScreen = (props) => {
                             <>
                                 <Text style={{ fontWeight: "600" }}>Name your card</Text>
                                 <InputField placeholder="Card name" value={props.card.title} fontWeight="600" fontSize={20} onChangeText={onChangeTitle} />
-                                <Text style={{ fontWeight: "600" }}>Location</Text>
-                                <InputField placeholder="ex. The Eiffel Tower" value={props.card.location} fontWeight="400" fontSize={14} onChangeText={onChangeLocation} />
+                                {/* <Text style={{ fontWeight: "600" }}>Location</Text>
+                                <InputField placeholder="ex. The Eiffel Tower" value={props.card.location} fontWeight="400" fontSize={14} onChangeText={onChangeLocation} /> */}
                                 <Text style={{ fontWeight: "600", paddingBottom: 10 }}>Add a picture to your card</Text>
                                 {
                                     card.thumbnailUrl

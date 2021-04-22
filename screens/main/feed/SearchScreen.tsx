@@ -59,7 +59,7 @@ const SearchScreen: FC<Props> = (props) => {
                 <FlatList
                     data={data}
                     renderItem={({ item, index }) => {
-                        console.log(item.profilePhotoUrl)
+                        // console.log(item.profilePhotoUrl)
                         return (
                             <TouchableOpacity onPress={() => props.navigation.push('ProfileStack', {screen: 'Profile', params: {username: item.username}})}>
                                 <View style={styles.bodyItem}>

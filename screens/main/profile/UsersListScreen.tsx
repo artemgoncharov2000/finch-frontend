@@ -1,20 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Button, Image } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { AsyncStorage } from 'react-native';
-import { getUserSubscribers, getUserSubscriptions } from '../../../api/profile/profileRequests';
+import { getUserByUsername, getUserSubscribers, getUserSubscriptions } from '../../../api/profile/profileRequests';
 import { connect } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { setUser } from '../../../redux/actions/userActions';
+import { BASE_URL } from '../../../api/baseURL';
+//@ts-ignore
+import BackButtonIcon from '../../../assets/icons/back-button-icon.svg';
 const ListItem = (props) => {
+    const [user, setUser] = useState();
 
+    useEffect(() => {
+        getUserByUsername(props.userToken, props.username)
+            .then(user => {
+                setUser(user)
+            });
+          
+    }, [])
     const onListItemPress = () => {
-        props.navigation.push('ProfileStack', { screen: 'Profile', params: { username: props.value } })
+        console.log('props.value:', props.username)
+        props.navigation.push('ProfileStack', { screen: 'Profile', params: { username: props.username } })
     }
     return (
-        <TouchableOpacity onPress={onListItemPress}>
-            <View style={styles.listItem}>
-                <Text style={styles.text}>{props.value}</Text>
+        <TouchableOpacity onPress={() => onListItemPress()}>
+            <View style={styles.bodyItem}>
+                <Image style={styles.image} source={{ uri: BASE_URL + "/i/" + user?.profilePhotoUrl }} />
+                <View style={styles.textInfo}>
+                    <Text style={styles.username}>{user?.username}</Text>
+                    <Text style={styles.title}>{user?.title}</Text>
+                </View>
             </View>
         </TouchableOpacity>
     )
@@ -24,7 +40,7 @@ const UsersListScreen = (props) => {
     const insets = useSafeAreaInsets();
     const [users, setUsers] = useState<string[]>([])
     const username = props.route.params.username;
-   
+
     useEffect(() => {
 
         if (props.type === 'Subscribers') {
@@ -46,14 +62,32 @@ const UsersListScreen = (props) => {
             flex: 1,
             justifyContent: 'center',
             paddingTop: insets.top,
-            paddingLeft: 20,
+
             backgroundColor: '#fff'
         }}>
-            <FlatList
-                data={users}
-                renderItem={({ item, index }) => <ListItem key={index} navigation={props.navigation} value={item} />}
-                keyExtractor={(item, index) => index.toString()}
-            />
+            <View style={styles.header}>
+                <View style={styles.headerLeftItem}>
+                    <TouchableOpacity onPress={() => { props.navigation.goBack() }}>
+                        <BackButtonIcon  width={26} height={26} fill="#000"/>
+                    </TouchableOpacity>
+                    
+                </View>
+                <View style={styles.headerCenterItem}>
+                    <Text style={styles.headerTitle}>{props.type}</Text>
+                </View>
+                <View style={styles.headerRightItem}>
+
+                </View>
+
+            </View>
+            <View style={styles.body}>
+                <FlatList
+                    data={users}
+                    renderItem={({ item, index }) => <ListItem key={index} navigation={props.navigation} username={item} userToken={props.userToken} />}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            </View>
+
 
         </View>
     );
@@ -66,19 +100,62 @@ const mapStateToProps = (state) => {
 }
 export default connect(mapStateToProps)(UsersListScreen);
 const styles = StyleSheet.create({
-    container: {
+
+    header: {
+        flex: 1,
+        flexDirection: 'row',
+        borderBottomWidth: 0.5,
+        borderBottomColor: 'rgba(60, 60, 67, 0.3)',
+
+    },
+    headerLeftItem: {
+        marginLeft: 10,
         flex: 1,
         justifyContent: 'center',
-        paddingLeft: 20,
-        backgroundColor: '#fff'
+        alignItems: 'flex-start',
+        // backgroundColor: 'green'
     },
-    listItem: {
+    headerCenterItem: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: 'red'
+    },
+    headerTitle: {
+        fontSize: 17,
+        fontWeight: '600'
+    },
+    headerRightItem: {
+        flex: 1,
+        // backgroundColor: 'yellow'
+    },
+    body: {
+        flex: 14, 
+
+    },
+    
+    bodyItem: {
+        minHeight: 44,
+        borderBottomColor: 'rgba(60, 60, 67, 0.3)',
+        borderBottomWidth: 0.5,
         paddingVertical: 10,
-        height: 44,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(60, 60, 67, 0.3)'
+        paddingLeft: 10,
+        flexDirection: 'row'
     },
-    text: {
-        fontSize: 18,
+    textInfo: {
+        paddingLeft: 10,
+        justifyContent: 'center',
+        flexDirection: 'column'
+    },
+    image: {
+        width: 52,
+        height: 52,
+        borderRadius: 90
+    },
+    username: {
+        fontWeight: '600'
+    },
+    title: {
+        color: 'gray'
     }
 })

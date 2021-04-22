@@ -11,6 +11,8 @@ import UserProfileScreen from '../screens/main/user/UserProfileScreen';
 
 const ProfileStackNavigator = ({ username, user, route, navigation }) => {
   const ProfileStack = createStackNavigator();
+  // console.log('username', username);
+  // console.log('route', route)
   return (
     <ProfileStack.Navigator
       headerMode="none"
@@ -19,11 +21,11 @@ const ProfileStackNavigator = ({ username, user, route, navigation }) => {
         username == 'me' || username === user.username
         ?
         <ProfileStack.Screen name="Profile">
-          {({navigation}) => <HomeProfileScreen navigation={navigation} username={username}/>}
+          {({navigation, route}) => <HomeProfileScreen navigation={navigation} route={route} username={username}/>}
         </ProfileStack.Screen>
         :
         <ProfileStack.Screen name="Profile">
-          {({navigation}) => <UserProfileScreen navigation={navigation} username={username}/>}
+          {({navigation, route}) => <UserProfileScreen navigation={navigation} route={route} username={username}/>}
         </ProfileStack.Screen>
       }
       <ProfileStack.Screen

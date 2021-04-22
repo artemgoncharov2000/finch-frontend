@@ -114,13 +114,15 @@ const CreateGuideScreen = (props: Props) => {
     const onImagePickerButtonPress = () => {
         pickImage()
             .then(uri => {
-                uploadImage(props.userToken, uri)
+                if (uri) {
+                    uploadImage(props.userToken, uri)
                     .then(id => {
                         setGuide(prevState => ({
                             ...prevState,
                             thumbnailUrl: id
                         }))
                     });
+                }
             })
     }
 

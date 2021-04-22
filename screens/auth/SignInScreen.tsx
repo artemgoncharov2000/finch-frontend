@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react'
-import { StyleSheet, Text, View, Button, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Button, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Linking } from 'react-native';
 import DefaultButton from '../../components/buttons/DefaultButton'
 import InputField from '../../components/input_fields/InputField';
 import SignUpScreen from './SignUpScreen'
@@ -43,10 +43,12 @@ const SignInScreen = (props) => {
     const onSignInButtonPress = () => {
         signInUser(user)
             .then(userToken => {
-                console.log(userToken);
-                LocalStorage.save('userToken', userToken)
-                props.signIn(userToken)
+                if (userToken) {
+                    LocalStorage.save('userToken', userToken)
+                    props.signIn(userToken)
+                }
             })
+            .catch(error => alert('Something goes wrong!'))
     }
 
     return (
@@ -64,6 +66,7 @@ const SignInScreen = (props) => {
                     <View style={styles.inputView}>
                         <InputField placeholder="Nickname" secureTextEntry={false} onChangeText={text => onUsernameChange(text)} />
                         <InputField placeholder="Password" secureTextEntry={true} onChangeText={text => onPasswordChange(text)} />
+                        <Button title="Privacy Policy" onPress={()=>{Linking.openURL('https://finch-backend-ty3pscheea-lz.a.run.app/privacy')}}/>
                     </View>
                     <View style={styles.buttonView}>
                         <DefaultButton

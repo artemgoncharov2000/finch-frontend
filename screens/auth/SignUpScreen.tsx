@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react'
-import { StyleSheet, Text, View, Button, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, View, Button, Keyboard, TouchableWithoutFeedback, Linking } from 'react-native';
 import DefaultButton from '../../components/buttons/DefaultButton'
 import InputField from '../../components/input_fields/InputField';
 //@ts-ignore 
@@ -81,6 +81,7 @@ const SignUpScreen: FC<Props> = (props) => {
                         <InputField placeholder="Username" secureTextEntry={false} onChangeText={text => onUsernameChange(text)} />
                         <InputField placeholder="Email" secureTextEntry={false} onChangeText={text => onEmailChange(text)} />
                         <InputField placeholder="Password" secureTextEntry={true} onChangeText={text => onPasswordChange(text)} />
+                        <Button title="Privacy Policy" onPress={()=>{Linking.openURL('https://finch-backend-ty3pscheea-lz.a.run.app/privacy')}}/>
                     </View>
                     <View style={styles.buttonView}>
                         <DefaultButton

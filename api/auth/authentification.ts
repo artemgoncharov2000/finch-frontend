@@ -19,6 +19,7 @@ export async function signUpUser(user: User){
     .then(response => response.data)
     .catch(error => {
         const errorJSON = error.toJSON();
+        
         if (errorJSON.message === "Request failed with status code 409"){
             alert('This account is already registered!');
         } else {
@@ -42,7 +43,15 @@ export async function signInUser(user: User){
         let headers = response.headers;
         return headers['authorization'];
     })
-    .catch(error => console.log(error));
+    .catch(error => {
+        const errorJSON = error.toJSON();
+        
+        if (errorJSON.message === "Request failed with status code 401"){
+            alert('Wrong username or password');
+        } else {
+            console.log(error);
+        }
+    });
 
     return request;
 }
